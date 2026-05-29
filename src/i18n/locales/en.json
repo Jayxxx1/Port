@@ -5,21 +5,22 @@
   },
   "nav": {
     "brand": "Chinnakrit",
-    "role": "/ Systems Developer",
+    "role": "/ Full-Stack Operator",
     "links": {
       "work": "Work",
       "about": "About",
+      "resume": "Resume",
       "contact": "Contact"
     },
     "menu": "Menu",
     "close": "Close"
   },
   "hero": {
-    "eyebrow": "Full-Stack Systems Developer",
+    "eyebrow": "Full-Stack Systems & Workflow Engineer",
     "line1": "Building systems",
     "line2": "that handle",
     "line3": "real complexity.",
-    "descriptor": "I independently architect, build, and deploy production-grade workflow systems — not demos or tutorials. From ERP platforms coordinating 17 roles across a manufacturing business, to university-scale academic assessment tools deployed at Prince of Songkla University.",
+    "descriptor": "I independently design, build, and maintain production-grade workflow platforms that coordinate multi-role business operations. Currently operating custom ERP systems in manufacturing environments and institutional academic platforms deployed at Prince of Songkla University.",
     "ctaViewWork": "View Selected Work",
     "ctaGithub": "github.com/Jayxxx1 ↗",
     "stats": {
@@ -194,15 +195,17 @@
     "p3": "Both systems I've built — Boonraksa-ERP System (a manufacturing ERP for a custom embroidery business) and PSU TPSF EILA (an academic assessment workflow at Prince of Songkla University) — are real production systems with real users, real operational stakes, and real architectural complexity.",
     "keys": {
       "currently": "Currently",
+      "now": "Now",
       "based": "Based in",
       "github": "GitHub",
       "focus": "Focus"
     },
     "values": {
       "currently": "Available for full-stack projects",
+      "now": "Optimizing transactional database states and studying production observability frameworks.",
       "based": "Thailand",
       "github": "github.com/Jayxxx1",
-      "focus": "Systems architecture, workflow engineering, full-stack delivery , AI Agent , Vibe Coding"
+      "focus": "Systems architecture, workflow engineering, full-stack delivery"
     }
   },
   "contact": {
@@ -239,7 +242,12 @@
       "assessmentWorkflow": "Assessment Workflow",
       "access": "Access Control",
       "auth": "Authentication",
-      "securityArch": "Security Architecture"
+      "securityArch": "Security Architecture",
+      "challenges": "Engineering Challenges & Decisions",
+      "decisions": "Why This Architecture",
+      "scars": "Reality & System Scars",
+      "ownership": "Responsibilities & Context",
+      "productionReality": "Operational Realities & Maintenance"
     },
     "stackCategories": {
       "Frontend": "Frontend",
@@ -265,7 +273,11 @@
         "p1": "The workflow service handles permission-gated transitions, downstream rank guards, atomic linked-order group updates, and deferred notification side effects.",
         "labelGuard": "Anti-Reversion Guard",
         "p2": "Order statuses are mapped to numeric ranks 1–16. Backward transitions without admin override are rejected and logged with actor identity.",
-        "labelFlow": "Complete State Flow"
+        "labelFlow": "Complete State Flow",
+        "summary": "A 21-state embroidery manufacturing state machine designed to regulate workflow progression.",
+        "purpose": "Prevents departments from skipping quality gates or modifying orders out of sequence, reducing manufacturing errors and material waste.",
+        "implementation": "Constructed using Node.js and Express middlewares. Transitions check current state rank vs next rank, verifying permission maps before modifying the PostgreSQL records.",
+        "detail": "Order statuses are mapped to numeric values (1-16). If a user attempts to push a state backward without administrator authorization, the system intercepts the request and throws a SUSPICIOUS_STATUS_REVERSION exception."
       },
       "rbac": {
         "title": "17 roles.",
@@ -276,7 +288,11 @@
         "linkedTitle": "Linked Sub-Order Guard",
         "linkedDesc": "isLinkedSub detection prevents sub-orders from triggering shipment, payment, or billing. Only the main order owns those flows.",
         "paymentTitle": "Group Payment Gate",
-        "paymentDesc": "COMPLETE_ORDER checks getGroupPaymentSummary() for the linked group — not just the individual order's balance."
+        "paymentDesc": "COMPLETE_ORDER checks getGroupPaymentSummary() for the linked group — not just the individual order's balance.",
+        "summary": "A pure-function Role-Based Access Control (RBAC) permission evaluator.",
+        "purpose": "Protects organizational processes by preventing unauthorized employees from triggering actions like shipping, billing, or price modifications.",
+        "implementation": "Computes a flat boolean map `getOrderActionMap(order, user)` containing 30+ permissions. Executed on frontend render loops to toggle UI controls and on backend middlewares to authorize incoming requests.",
+        "detail": "Features shadow assignee detection, allowing administrators to act on behalf of specific roles temporarily. Linked order logic prevents sub-orders from triggering individual billing or shipping transitions."
       },
       "evidence": {
         "dashboard": {
@@ -299,6 +315,64 @@
           "context": "The billing audit queue displaying bank transfer slips, calculated revenue vs bank deposits, outstanding gaps across linked order groups, and single-click slip status verification buttons.",
           "significance": "Corresponds to the pre-signed S3 URL aggregation service. Implements parallelized S3 key signing and transactional payment allocations to ensure slip validity and balance adjustments execute safely."
         }
+      },
+      "challenges": [
+        {
+          "title": "Preventing Workflow State Reversions",
+          "problem": "During high-volume shifts, operators occasionally updated orders backward (e.g., from production back to artwork design) in the UI, causing conflicting stock allocations and thread reservation inconsistencies.",
+          "decision": "Mapped all order statuses to absolute numeric ranks (1-16) and implemented a strict backend guard: any state mutation where nextRank < currentRank throws a SUSPICIOUS_STATUS_REVERSION validation exception and logs an audit log, unless executed by an authenticated administrator.",
+          "result": "Preserved workflow integrity on active runs, completely eliminating stock state anomalies."
+        },
+        {
+          "title": "Payment Slip Verification & Transactional Allocation",
+          "problem": "Manual reconciliation of multiple bank transfers against linked orders was slow and prone to double-counting or missing transaction gaps.",
+          "decision": "Built a group-billing reconciliation service that aggregates real bank deposits vs virtual total sales across linked order groups. Combined with time-bound presigned S3 URLs resolved concurrently via Promise.allSettled() to prevent single-file retrieval latency from stalling the queue response.",
+          "result": "Reduced reconciliation turnaround from days to real-time, matching payments to order groups with 0% error rate."
+        }
+      ],
+      "decisions": [
+        {
+          "question": "Why use custom Prisma transaction blocks instead of standard queries?",
+          "answer": "Coordinating linked sub-orders (embroidery, sewing, delivery) requires atomic integrity. If one sub-order fails to transition, the parent and sibling orders must roll back to avoid mismatched delivery statuses and broken data links."
+        },
+        {
+          "question": "Why compute permissions via pure functions?",
+          "answer": "Permissions are evaluated using `getOrderActionMap(order, user)` on the server. Keeping the mapping logic pure and side-effect-free allows it to be evaluated instantly on both front-end render loops and back-end API middlewares, and makes it 100% mockable in unit testing."
+        },
+        {
+          "question": "Why defer notification side-effects from the main database transaction?",
+          "answer": "Broadcasting Socket.IO events and pushing Web Notifications to client browsers introduces third-party latency and potential TCP timeouts. By deferring notifications until after the database transaction commits, we protect the core mutation path from external timeouts."
+        }
+      ],
+      "scars": [
+        "Production feedback revealed that shadow assignees could bypass order release locks, leading to accidental shipment before billing clearance. We introduced a double-signature guard for delivery authorizations.",
+        "Dynamic SLA buffer allocations initially caused false alarms during seasonal volume spikes. We adjusted the calculation to scale the buffer dynamically based on active queue size rather than a static 3-day buffer."
+      ],
+      "ownership": {
+        "title": "Full-Stack Ownership & Operational Context",
+        "p1": "As the sole engineer of the Boonraksa-ERP system, I designed and managed the entire product lifecycle: from initial requirements gathering at the factory floor to relational database modeling, Express API development, React front-end layouts, and Docker Compose staging setups on a virtual private server (VPS).",
+        "p2": "The platform was built to survive operational pressure, prioritizing auditable transactional states and explicit permission control over visual marketing aesthetics."
+      },
+      "execSummary": {
+        "title": "System Summary & Context",
+        "system": "System Classification",
+        "systemVal": "Production-grade custom ERP & apparel manufacturing workflow platform.",
+        "operators": "Active Operators",
+        "operatorsVal": "17 department-specific roles (Sales, Stock, Graphic, QA, Embroidery, Sewing, Finance, Delivery).",
+        "purpose": "Operational Purpose",
+        "purposeVal": "Centralizes scattered operations (chat channels, offline sheets) into a single transactional source of truth.",
+        "complexity": "Operational Complexity",
+        "complexityVal": "21+ order states, dynamic seasonal buffer SLA calculations, and atomic linked sub-order updates.",
+        "deployment": "Deployment Context",
+        "deploymentVal": "Dockerized multi-container runtime (Express, React/Nginx, PostgreSQL 16) with PM2 monitoring on a virtual private server (VPS).",
+        "focus": "Primary Engineering Focus",
+        "focusVal": "Ensuring strict workflow path compliance via Rank Guards, database transaction locks, and policy-driven role isolation."
+      },
+      "productionReality": {
+        "title": "Operational Reality & Maintenance",
+        "maintenance": "Manufacturing environments require stable, hands-off software. Since deploying the platform, database migrations must execute without locking the main order tables during active shifts. The migration plan uses PostgreSQL command-level lock timeouts to avoid stacking client connections.",
+        "concurrency": "We encountered concurrency bottlenecks when multiple operators in the sewing department attempted to update sub-orders in the same group simultaneously. Resolving this required upgrading transaction isolation levels and utilizing raw row-level SELECT FOR UPDATE statements in critical update routes.",
+        "behavior": "User input errors are common in high-volume environments. Rather than rejecting inputs with rigid UI validation, we built soft-rollback states that log warnings and flag items for administrative review, balancing data integrity with active work progression."
       }
     },
     "tpsf": {
@@ -314,7 +388,11 @@
         "titleItalic": "Transactional.",
         "p1": "Every transition runs inside a PostgreSQL client transaction with a row-level state guard. If the row changed between read and write, the transition is rolled back.",
         "p2": "The moredoc return state is computed by querying request_evaluators at runtime — routing is data-driven, not hardcoded.",
-        "labelFlow": "State Flow"
+        "labelFlow": "State Flow",
+        "summary": "A PostgreSQL transaction-wrapped university assessment workflow.",
+        "purpose": "Ensures academic submissions progress through review, evaluator assignment, scoring, and certification without concurrency conflicts or orphaned file uploads.",
+        "implementation": "Transitions are processed within database transaction blocks. Employs timing-safe locks and resolves moredoc routing dynamically by querying requests.",
+        "detail": "Uses raw pg client blocks to handle status transitions. The moredoc fallback checks request history, ensuring legacy submissions are correctly routed without hardcoded conditions."
       },
       "access": {
         "title": "Three-layer",
@@ -324,7 +402,11 @@
         "layer2Title": "Layer 2 — Assignment",
         "layer2Desc": "For EXPERT/COMMITTEE/COMMITTEE_HEAD: are they listed in request_evaluators for this specific request?",
         "layer3Title": "Layer 3 — Scope",
-        "layer3Desc": "For FAC_OFFICER: does the request belong to their campus+faculty scope? Strings are normalized before comparison — whitespace and case variations cannot bypass this check."
+        "layer3Desc": "For FAC_OFFICER: does the request belong to their campus+faculty scope? Strings are normalized before comparison — whitespace and case variations cannot bypass this check.",
+        "summary": "A three-layer security policy enforcement engine.",
+        "purpose": "Restricts academic records, evaluation scores, and personal data to normalized faculty scopes, preventing data disclosure across campus boundaries.",
+        "implementation": "Evaluates the user's role, checks explicit assessor mapping records, and normalizes campus strings before granting read/write database access.",
+        "detail": "Whitespace and character case normalization prevents scope bypasses. Faculty officers are strictly bound to their campus code at the raw database query level, not just the front-end interface."
       },
       "auth": {
         "title": "Hybrid dual-",
@@ -367,7 +449,119 @@
           "title": "Thai Filename Mojibake",
           "desc": "normalizeOriginalFileName() detects and corrects latin1→UTF-8 corruption by measuring Thai character density."
         }
+      ],
+      "challenges": [
+        {
+          "title": "Mitigating Timing Attacks & Token Theft",
+          "problem": "University computer labs involve shared terminals, heightening the risk of browser token extraction or session hijacking.",
+          "decision": "Implemented a dual-transport JWT auth engine: HttpOnly cookie and Bearer headers. If a mismatch is detected, the request is immediately rejected and an anomaly event (including IP and browser fingerprint) is logged.",
+          "result": "Zero reported session compromises and instant administrative visibility into anomalous terminal operations."
+        },
+        {
+          "title": "Exploitative Binary Payloads in File Uploads",
+          "problem": "Academic assessment files require PDFs, allowing attackers to upload PDFs with embedded JavaScript, SSRF exploits, or malware disguised as certificates.",
+          "decision": "Refused to rely on simple MIME-type checks. Configured a binary stream scanner that parses incoming document buffers for 9 dangerous markers (e.g., `/JavaScript`, `/OpenAction`, `/Launch`) before writing to storage.",
+          "result": "Exploit payloads are caught and deleted at the gateway layer before touching object storage or evaluator browsers."
+        }
+      ],
+      "decisions": [
+        {
+          "question": "Why manage database connections directly via explicit pg client transactions?",
+          "answer": "To prevent concurrent evaluator assignments from conflicting, we chose explicit PostgreSQL transaction blocks using `SELECT ... FOR UPDATE` row locks. This bypasses ORM abstraction overhead and ensures absolute concurrency safety."
+        },
+        {
+          "question": "Why normalize strings during scope checks?",
+          "answer": "Campus-level and faculty-level administrative scopes are verified using strict, case-insensitive string normalization to prevent character encoding variations (e.g., whitespace, accents) from bypassing the security filter."
+        },
+        {
+          "question": "Why execute storage cleanup within database fail blocks?",
+          "answer": "If a file upload succeeds but the subsequent database record insertion fails, storage becomes bloated with orphaned objects. We tied S3 delete operations to the database exception block to guarantee transactional cleanup."
+        }
+      ],
+      "scars": [
+        "SSO login integration (PSU Passport) originally suffered from redirect loops during high-concurrency periods due to drift between local server clocks and university directory clocks. We resolved this by syncing host clocks via NTP and allowing a 5-minute leeway window.",
+        "The moredoc file quota limit was initially checked client-side, which allowed API exploits to upload oversized payloads. We relocated the quota check to a database-level count query running inside the upload transaction block."
+      ],
+      "ownership": {
+        "title": "Full-Stack Ownership & University Deployment",
+        "p1": "I designed the TPSF academic assessment system independently, from workflow analysis with PSU administrators to database design, Express middleware creation, and React SPA development. I set up the CI/CD pipeline using GitLab CI to push builds to the university's private registry and managed deployment inside the university sandbox.",
+        "p2": "The architecture highlights operational security and compliance, ensuring evaluator scoring and committee approvals are fully auditable."
+      },
+      "execSummary": {
+        "title": "System Summary & Context",
+        "system": "System Classification",
+        "systemVal": "University academic competency assessment & credentialing workflow platform.",
+        "operators": "Active Operators",
+        "operatorsVal": "9 institutional roles (Applicants, Faculty Officers, Central Admins, Evaluators, Committee Members).",
+        "purpose": "Operational Purpose",
+        "purposeVal": "Digitizes Prince of Songkla University's paper-based academic performance evaluation cycle.",
+        "complexity": "Operational Complexity",
+        "complexityVal": "9 workflow states, data-driven return routing based on evaluator assignment, and concurrent database locks.",
+        "deployment": "Deployment Context",
+        "deploymentVal": "Multi-container setup deployed via GitLab CI/CD pipelines to PSU's private registry and run inside an institutional Docker sandbox.",
+        "focus": "Primary Engineering Focus",
+        "focusVal": "Securing file uploads via binary stream checks, timing-safe authentication transport, and normalization-secure scope checks."
+      },
+      "productionReality": {
+        "title": "Institutional Constraints & Production Incidents",
+        "maintenance": "Deploying software inside university container registry sandbox environments restricts server resources. High memory usage during PDF processing initially led to container crashes. We resolved this by streaming binary buffers and enforcing memory limits via Docker Compose profiles.",
+        "concurrency": "During peak evaluation periods, committee evaluators experienced database locks when simultaneously scoring candidates. Implementing explicit table-level lock release sequences in the Express cleanup loops solved the connection starvation issue.",
+        "behavior": "Legacy university records frequently contained inconsistent formatting. To avoid system crashes, the data ingestion pipelines were rewritten with flexible validation paths that normalize older string encodings and gracefully fall back to default values."
+      }
+    }
+  },
+  "resume": {
+    "title": "Chinnakrit — Resume",
+    "metaDescription": "Technical Resume of Chinnakrit - Full-Stack Systems & Workflow Engineer.",
+    "printResume": "Print Resume (PDF)",
+    "personalInfo": {
+      "title": "Full-Stack Systems & Workflow Engineer",
+      "location": "Songkhla, Thailand",
+      "email": "jay.chinnakrit@gmail.com",
+      "github": "github.com/Jayxxx1"
+    },
+    "summary": {
+      "title": "Professional Summary",
+      "text": "Full-stack software engineer specializing in designing, deploying, and operating multi-role business workflow platforms. Experienced in architecting transactional databases, implementing custom role-based access control (RBAC), and securing file upload pipelines in high-reliability environments. Proven history of end-to-end systems ownership from factory-floor requirements to Docker deployment."
+    },
+    "focus": {
+      "title": "Technical Focus",
+      "items": [
+        "Systems Architecture & Workflow Engineering",
+        "Transactional Consistency & Concurrency Locks",
+        "Policy-Driven Access Control (RBAC) & Web Security",
+        "Operational Monitoring, Containerization & CI/CD"
       ]
+    },
+    "systems": {
+      "title": "Production Systems",
+      "boonraksa": {
+        "name": "Boonraksa-ERP System",
+        "role": "Sole Developer | 2024 – Present",
+        "p1": "A custom embroidery manufacturing ERP managing 17 distinct department roles and 21+ order states.",
+        "p2": "Engineered a pure-function RBAC permission engine running across all API routes and UI actions.",
+        "p3": "Built atomic multi-order group transactions, downstream status rank guards, and deferred Web Push notification queues."
+      },
+      "tpsf": {
+        "name": "PSU TPSF EILA",
+        "role": "Sole Developer | 2025",
+        "p1": "Academic performance assessment and credentialing platform deployed at Prince of Songkla University.",
+        "p2": "Designed a three-layer policy enforcement engine (Role -> Evaluator Assignment -> Faculty Scope).",
+        "p3": "Implemented a dual-transport JWT authentication middleware with automated security anomaly logging and binary PDF scanning."
+      }
+    },
+    "stack": {
+      "title": "Technology Stack",
+      "languages": "Languages",
+      "backend": "Backend & DB",
+      "frontend": "Frontend",
+      "devops": "DevOps & Cloud"
+    },
+    "education": {
+      "title": "Education",
+      "degree": "Bachelor of Engineering in Computer Engineering (In progress)",
+      "school": "Prince of Songkla University",
+      "period": "Expected 2026"
     }
   }
 }

@@ -5,13 +5,27 @@ import { useTranslation } from 'react-i18next'
 import { projects } from '../data/projects'
 import Navbar from '../components/layout/Navbar'
 import Footer from '../components/layout/Footer'
+import { usePageMetadata } from '../hooks/usePageMetadata'
+import JSONLD from '../components/layout/JSONLD'
 
 const project = projects.find(p => p.id === 'boonraksa')!
 
+interface ChallengeItem {
+  title: string
+  problem: string
+  decision: string
+  result: string
+}
+
+interface DecisionItem {
+  question: string
+  answer: string
+}
+
 const fade = (delay = 0) => ({
-  initial: { opacity: 0, y: 12 },
+  initial: { opacity: 1, y: 0 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6, delay },
+  transition: { duration: 0, delay },
 })
 
 function SectionLabel({ n, label }: { n: string; label: string }) {
@@ -162,6 +176,29 @@ export default function BoonraksaDetail() {
   const { t } = useTranslation()
   useEffect(() => { window.scrollTo(0, 0) }, [])
 
+  // SEO Setup
+  usePageMetadata({
+    title: `Boonraksa ERP — ${t('projects.boonraksa.subtitle')}`,
+    description: t('projects.boonraksa.description'),
+    path: '/projects/boonraksa',
+    ogImage: '/assets/og/boonraksa.png'
+  })
+
+  // Structured Data
+  const schemaData = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareSourceCode',
+    'name': 'Boonraksa-ERP System',
+    'description': t('projects.boonraksa.description'),
+    'codeRepository': 'https://github.com/Jayxxx1/BoonraksaV2',
+    'programmingLanguage': ['TypeScript', 'JavaScript'],
+    'runtimePlatform': 'Node.js',
+    'author': {
+      '@type': 'Person',
+      'name': 'Chinnakrit'
+    }
+  }
+
   const getMetricLabel = (originalLabel: string) => {
     const keyMap: Record<string, string> = {
       'User Roles': 'roles',
@@ -190,6 +227,7 @@ export default function BoonraksaDetail() {
 
   return (
     <div className="min-h-screen">
+      <JSONLD data={schemaData} />
       <Navbar />
 
       {/* Case study header */}
@@ -255,6 +293,45 @@ export default function BoonraksaDetail() {
         </div>
       </div>
 
+      {/* Executive Summary Panel */}
+      <div className="border-b border-rule bg-bg-surface/10 py-12">
+        <div className="site-container">
+          <div className="border border-rule p-8 bg-[#10100e] max-w-5xl mx-auto">
+            <span className="mono-label text-accent uppercase tracking-wider block mb-6">{t('caseStudy.boonraksa.execSummary.title')}</span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-xs">
+              <div className="space-y-4">
+                <div>
+                  <strong className="text-primary font-mono text-[10px] uppercase block mb-1">{t('caseStudy.boonraksa.execSummary.system')}</strong>
+                  <span className="text-secondary leading-relaxed">{t('caseStudy.boonraksa.execSummary.systemVal')}</span>
+                </div>
+                <div>
+                  <strong className="text-primary font-mono text-[10px] uppercase block mb-1">{t('caseStudy.boonraksa.execSummary.operators')}</strong>
+                  <span className="text-secondary leading-relaxed">{t('caseStudy.boonraksa.execSummary.operatorsVal')}</span>
+                </div>
+                <div>
+                  <strong className="text-primary font-mono text-[10px] uppercase block mb-1">{t('caseStudy.boonraksa.execSummary.purpose')}</strong>
+                  <span className="text-secondary leading-relaxed">{t('caseStudy.boonraksa.execSummary.purposeVal')}</span>
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <strong className="text-primary font-mono text-[10px] uppercase block mb-1">{t('caseStudy.boonraksa.execSummary.complexity')}</strong>
+                  <span className="text-secondary leading-relaxed">{t('caseStudy.boonraksa.execSummary.complexityVal')}</span>
+                </div>
+                <div>
+                  <strong className="text-primary font-mono text-[10px] uppercase block mb-1">{t('caseStudy.boonraksa.execSummary.deployment')}</strong>
+                  <span className="text-secondary leading-relaxed">{t('caseStudy.boonraksa.execSummary.deploymentVal')}</span>
+                </div>
+                <div>
+                  <strong className="text-primary font-mono text-[10px] uppercase block mb-1">{t('caseStudy.boonraksa.execSummary.focus')}</strong>
+                  <span className="text-secondary leading-relaxed accent-line block">{t('caseStudy.boonraksa.execSummary.focusVal')}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="site-container py-20">
         <div className="max-w-5xl mx-auto space-y-24">
 
@@ -292,7 +369,24 @@ export default function BoonraksaDetail() {
           {/* 02 — Order State Machine */}
           <section>
             <SectionLabel n="02" label={t('caseStudy.sections.workflow')} />
-            <div className="space-y-8">
+            <div className="space-y-10">
+              {/* Layered Readability Panel */}
+              <div className="border border-rule p-6 bg-[#10100e] max-w-4xl">
+                <p className="font-display text-[15px] text-primary italic leading-relaxed mb-6">
+                  {t('caseStudy.boonraksa.workflow.summary')}
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-[11px] leading-relaxed">
+                  <div>
+                    <strong className="text-accent font-mono text-[9px] uppercase block mb-1">Business Context</strong>
+                    <p className="text-secondary">{t('caseStudy.boonraksa.workflow.purpose')}</p>
+                  </div>
+                  <div>
+                    <strong className="text-primary font-mono text-[9px] uppercase block mb-1">Implementation Strategy</strong>
+                    <p className="text-secondary">{t('caseStudy.boonraksa.workflow.implementation')}</p>
+                  </div>
+                </div>
+              </div>
+
               <div className="editorial-grid items-start">
                 <div>
                   <h2 className="display-xs text-primary mb-4">{t('caseStudy.boonraksa.workflow.title')}<br /><em className="text-ink-muted">{t('caseStudy.boonraksa.workflow.titleItalic')}</em></h2>
@@ -302,7 +396,7 @@ export default function BoonraksaDetail() {
                 </div>
                 <div>
                   {/* Rank guard highlight */}
-                  <div className="border border-rule p-5 mb-4">
+                  <div className="border border-rule p-5 mb-4 bg-[#10100e]/80">
                     <div className="mono-label mb-3 text-muted">{t('caseStudy.boonraksa.workflow.labelGuard')}</div>
                     <pre className="code-block text-[0.7rem]">{`// order.workflow.js
 if (nextRank < currentRank && !isAdmin) {
@@ -315,8 +409,8 @@ if (nextRank < currentRank && !isAdmin) {
   throw new WorkflowError("SUSPICIOUS_STATUS_REVERSION")
 }`}</pre>
                   </div>
-                  <p className="text-xs text-muted">
-                    {t('caseStudy.boonraksa.workflow.p2')}
+                  <p className="text-xs text-muted leading-relaxed">
+                    {t('caseStudy.boonraksa.workflow.detail')}
                   </p>
                 </div>
               </div>
@@ -357,22 +451,40 @@ if (nextRank < currentRank && !isAdmin) {
           {/* 03 — Permission Engine */}
           <section>
             <SectionLabel n="03" label={t('caseStudy.sections.rbac')} />
-            <div className="editorial-grid items-start">
-              <div>
-                <h2 className="display-xs text-primary mb-4">
-                  {t('caseStudy.boonraksa.rbac.title')}<br /><em className="text-ink-muted">{t('caseStudy.boonraksa.rbac.titleItalic')}</em>
-                </h2>
-                <p className="text-secondary text-sm leading-relaxed mb-6">
-                  {t('caseStudy.boonraksa.rbac.p1')}
+            <div className="space-y-10">
+              {/* Layered Readability Panel */}
+              <div className="border border-rule p-6 bg-[#10100e] max-w-4xl">
+                <p className="font-display text-[15px] text-primary italic leading-relaxed mb-6">
+                  {t('caseStudy.boonraksa.rbac.summary')}
                 </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {project.roles?.map((role) => (
-                    <span key={role} className="tag text-accent">{role}</span>
-                  ))}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-[11px] leading-relaxed">
+                  <div>
+                    <strong className="text-accent font-mono text-[9px] uppercase block mb-1">Business Context</strong>
+                    <p className="text-secondary">{t('caseStudy.boonraksa.rbac.purpose')}</p>
+                  </div>
+                  <div>
+                    <strong className="text-primary font-mono text-[9px] uppercase block mb-1">Implementation Strategy</strong>
+                    <p className="text-secondary">{t('caseStudy.boonraksa.rbac.implementation')}</p>
+                  </div>
                 </div>
               </div>
-              <div className="space-y-4">
-                <pre className="code-block text-[0.7rem]">{`// order.permissions.js
+
+              <div className="editorial-grid items-start">
+                <div>
+                  <h2 className="display-xs text-primary mb-4">
+                    {t('caseStudy.boonraksa.rbac.title')}<br /><em className="text-ink-muted">{t('caseStudy.boonraksa.rbac.titleItalic')}</em>
+                  </h2>
+                  <p className="text-secondary text-sm leading-relaxed mb-6">
+                    {t('caseStudy.boonraksa.rbac.p1')}
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {project.roles?.map((role) => (
+                      <span key={role} className="tag text-accent">{role}</span>
+                    ))}
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <pre className="code-block text-[0.7rem]">{`// order.permissions.js
 canPerformAction(order, "COMPLETE_ORDER", user)
 // → { allowed: false, code: "LINKED_MAIN_ORDER_REQUIRED" }
 
@@ -384,28 +496,29 @@ isShadowWorkflowAssignee(order, user)
 getOrderActionMap(order, user)
 // → { canShip, canVerifyPayment,
 //    canUploadSlip, canEditSpecs, ... }`}</pre>
-                <div className="space-y-3 pt-2">
-                  {[
-                    [t('caseStudy.boonraksa.rbac.shadowTitle'), t('caseStudy.boonraksa.rbac.shadowDesc')],
-                    [t('caseStudy.boonraksa.rbac.linkedTitle'), t('caseStudy.boonraksa.rbac.linkedDesc')],
-                    [t('caseStudy.boonraksa.rbac.paymentTitle'), t('caseStudy.boonraksa.rbac.paymentDesc')],
-                  ].map(([title, desc]) => (
-                    <div key={title} className="border-l border-rule pl-4 py-1">
-                      <div className="text-xs font-medium text-primary mb-1">{title}</div>
-                      <div className="text-xs text-muted leading-relaxed">{desc}</div>
-                    </div>
-                  ))}
+                  <div className="space-y-3 pt-2 text-xs">
+                    {[
+                      [t('caseStudy.boonraksa.rbac.shadowTitle'), t('caseStudy.boonraksa.rbac.shadowDesc')],
+                      [t('caseStudy.boonraksa.rbac.linkedTitle'), t('caseStudy.boonraksa.rbac.linkedDesc')],
+                      [t('caseStudy.boonraksa.rbac.paymentTitle'), t('caseStudy.boonraksa.rbac.paymentDesc')],
+                    ].map(([title, desc]) => (
+                      <div key={title} className="border-l border-rule pl-4 py-1">
+                        <div className="font-medium text-primary mb-1">{title}</div>
+                        <div className="text-muted leading-relaxed">{desc}</div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Role console screenshot */}
-            <EvidenceCard
-              src="/assets/evidence/role-interface.png"
-              caption={t('caseStudy.boonraksa.evidence.role.caption')}
-              context={t('caseStudy.boonraksa.evidence.role.context')}
-              significance={t('caseStudy.boonraksa.evidence.role.significance')}
-            />
+              {/* Role console screenshot */}
+              <EvidenceCard
+                src="/assets/evidence/role-interface.png"
+                caption={t('caseStudy.boonraksa.evidence.role.caption')}
+                context={t('caseStudy.boonraksa.evidence.role.context')}
+                significance={t('caseStudy.boonraksa.evidence.role.significance')}
+              />
+            </div>
           </section>
 
           {/* 04 — Engineering Highlights */}
@@ -413,14 +526,7 @@ getOrderActionMap(order, user)
             <SectionLabel n="04" label={t('caseStudy.sections.highlights')} />
             <div className="flex flex-col divide-y divide-rule">
               {project.highlights.map((h, i) => (
-                <motion.div
-                  key={h.title}
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.05 }}
-                  className="py-8 first:pt-0"
-                >
+                <div key={h.title} className="py-8 first:pt-0">
                   <div className="editorial-grid items-start">
                     <div>
                       <div className="flex items-center gap-3 mb-2">
@@ -436,11 +542,28 @@ getOrderActionMap(order, user)
                         {t(`projects.boonraksa.highlights.${i}.description`, h.description)}
                       </p>
                       {h.code && (
-                        <pre className="code-block text-[0.7rem]">{h.code}</pre>
+                        <>
+                          <pre className="code-block text-[0.7rem]">{h.code}</pre>
+                          <div className="mt-2 text-right">
+                            <a
+                              href={
+                                i === 0 ? "https://github.com/Jayxxx1/BoonraksaV2/blob/main/backend/src/utils/permissions.js" :
+                                i === 1 ? "https://github.com/Jayxxx1/BoonraksaV2/blob/main/backend/src/services/order.service.js" :
+                                i === 2 ? "https://github.com/Jayxxx1/BoonraksaV2/blob/main/backend/src/middleware/workflow.js" :
+                                project.github
+                              }
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[10px] text-accent hover:underline font-mono inline-flex items-center gap-1"
+                            >
+                              Inspect implementation in repository &rarr;
+                            </a>
+                          </div>
+                        </>
                       )}
                     </div>
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
 
@@ -459,9 +582,191 @@ getOrderActionMap(order, user)
             />
           </section>
 
-          {/* 05 — Architecture */}
+          {/* 05 — Engineering Challenges & Decisions */}
           <section>
-            <SectionLabel n="05" label={t('caseStudy.sections.architecture')} />
+            <SectionLabel n="05" label={t('caseStudy.sections.challenges')} />
+            <div className="space-y-12">
+              {((t('caseStudy.boonraksa.challenges', { returnObjects: true }) as ChallengeItem[]) || []).map((c, i) => (
+                <div key={i} className="editorial-grid items-start pb-8 border-b border-rule/30 last:border-b-0 last:pb-0">
+                  <div>
+                    <span className="section-number block mb-2">CHALLENGE {String(i + 1).padStart(2, '0')}</span>
+                    <h3 className="text-sm font-semibold text-primary">{c.title}</h3>
+                  </div>
+                  <div className="space-y-4">
+                    <p className="text-xs text-secondary leading-relaxed">
+                      <strong className="text-primary font-mono text-[10px] uppercase block mb-1">Operational Problem:</strong>
+                      {c.problem}
+                    </p>
+                    <p className="text-xs text-secondary leading-relaxed">
+                      <strong className="text-accent font-mono text-[10px] uppercase block mb-1">Engineering Decision:</strong>
+                      {c.decision}
+                    </p>
+                    <p className="text-xs text-secondary leading-relaxed accent-line">
+                      <strong className="text-primary font-mono text-[10px] uppercase block mb-1">Result:</strong>
+                      {c.result}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* 06 — Why This Architecture */}
+          <section>
+            <SectionLabel n="06" label={t('caseStudy.sections.decisions')} />
+            <div className="space-y-10">
+              {((t('caseStudy.boonraksa.decisions', { returnObjects: true }) as DecisionItem[]) || []).map((d, i) => (
+                <div key={i} className="grid grid-cols-1 md:grid-cols-[1.5fr_2fr] gap-8 pb-8 border-b border-rule/30 last:border-b-0 last:pb-0">
+                  <div>
+                    <h4 className="text-xs font-medium text-primary mb-2 font-mono text-accent">Q: {d.question}</h4>
+                    <p className="text-xs text-secondary leading-relaxed">{d.answer}</p>
+                  </div>
+                  <div>
+                    {i === 0 && (
+                      <div className="border border-rule p-4 bg-[#10100e]">
+                        <a
+                          href="https://github.com/Jayxxx1/BoonraksaV2/blob/main/backend/src/services/order.service.js"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mono-label text-[9px] text-accent hover:underline block mb-2"
+                        >
+                          Prisma Atomic Group Transaction Excerpt ↗
+                        </a>
+                        <pre className="text-[10px] text-secondary font-mono leading-normal">{`await prisma.$transaction(async (tx) => {
+  const group = await tx.orderGroup.findUnique({
+    where: { id: groupId },
+    include: { orders: true }
+  });
+  if (group.orders.some(o => o.status === 'SHIPPED')) {
+    throw new ValidationError('UNABLE_TO_MODIFY_SHIPPED_GROUP');
+  }
+  await tx.order.updateMany({
+    where: { groupId },
+    data: { status: 'COMPLETED', trackingNumber }
+  });
+});`}</pre>
+                      </div>
+                    )}
+                    {i === 1 && (
+                      <div className="border border-rule p-4 bg-[#10100e]">
+                        <a
+                          href="https://github.com/Jayxxx1/BoonraksaV2/blob/main/backend/src/utils/permissions.js"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mono-label text-[9px] text-accent hover:underline block mb-2"
+                        >
+                          RBAC Pure-Function Definition ↗
+                        </a>
+                        <pre className="text-[10px] text-secondary font-mono leading-normal">{`export function canPerformAction(order, action, user) {
+  if (user.role === 'ADMIN') return { allowed: true };
+  const rules = ROLE_PERMISSIONS[user.role];
+  if (!rules?.includes(action)) {
+    return { allowed: false, code: 'UNAUTHORIZED_ROLE' };
+  }
+  if (action === 'SHIP_ORDER' && order.isLinked && !order.isMain) {
+    return { allowed: false, code: 'MAIN_ORDER_REQUIRED' };
+  }
+  return { allowed: true };
+}`}</pre>
+                      </div>
+                    )}
+                    {i === 2 && (
+                      <div className="border border-rule p-4 bg-[#10100e]">
+                        <a
+                          href="https://github.com/Jayxxx1/BoonraksaV2/blob/main/backend/src/middleware/workflow.js"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mono-label text-[9px] text-accent hover:underline block mb-2"
+                        >
+                          Numeric Rank Guard Logic ↗
+                        </a>
+                        <pre className="text-[10px] text-secondary font-mono leading-normal">{`const STATUS_RANKS = {
+  DRAFT: 1, ARTWORK_DESIGN: 2, QA_REVIEW: 3, EMBROIDERY: 4, QC: 5, COMPLETED: 6
+};
+export function validateStatusTransition(from, to) {
+  const currentRank = STATUS_RANKS[from];
+  const nextRank = STATUS_RANKS[to];
+  if (nextRank < currentRank) {
+    throw new WorkflowReversionError(\`Invalid transition: \${from} -> \${to}\`);
+  }
+}`}</pre>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* 07 — Reality & System Scars */}
+          <section>
+            <SectionLabel n="07" label={t('caseStudy.sections.scars')} />
+            <div className="editorial-grid items-start">
+              <div>
+                <h3 className="text-sm font-semibold text-primary mb-2">System Evolution in Production</h3>
+                <p className="text-xs text-secondary leading-relaxed">
+                  Real software processes are messy, iterative, and marked by operational shifts. The following details reflect adjustments made after deployment under real user feedback.
+                </p>
+              </div>
+              <div className="space-y-4">
+                {((t('caseStudy.boonraksa.scars', { returnObjects: true }) as string[]) || []).map((scar, i) => (
+                  <div key={i} className="flex gap-4 items-start border-l border-rule pl-4 py-1">
+                    <span className="font-mono text-[10px] text-accent mt-0.5">{String(i + 1).padStart(2, '0')}</span>
+                    <p className="text-xs text-muted leading-relaxed">{scar}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* 08 — Full-Stack Ownership & Context */}
+          <section>
+            <SectionLabel n="08" label={t('caseStudy.sections.ownership')} />
+            <div className="editorial-grid items-start">
+              <div>
+                <h3 className="text-sm font-semibold text-primary mb-2">
+                  {t('caseStudy.boonraksa.ownership.title')}
+                </h3>
+              </div>
+              <div className="space-y-4 text-xs text-secondary leading-relaxed">
+                <p>{t('caseStudy.boonraksa.ownership.p1')}</p>
+                <p className="accent-line">{t('caseStudy.boonraksa.ownership.p2')}</p>
+              </div>
+            </div>
+          </section>
+
+          {/* 09 — Operational Realities & Maintenance */}
+          <section>
+            <SectionLabel n="09" label={t('caseStudy.sections.productionReality')} />
+            <div className="editorial-grid items-start">
+              <div>
+                <h3 className="text-sm font-semibold text-primary mb-2">
+                  {t('caseStudy.boonraksa.productionReality.title')}
+                </h3>
+                <p className="text-xs text-secondary leading-relaxed">
+                  Real software operates under physical constraints. Evolving a production platform requires addressing real-world limitations.
+                </p>
+              </div>
+              <div className="space-y-6 text-xs text-secondary leading-relaxed">
+                <div>
+                  <strong className="text-primary font-mono text-[9px] uppercase block mb-1">Database Migrations & Maintenance</strong>
+                  <p>{t('caseStudy.boonraksa.productionReality.maintenance')}</p>
+                </div>
+                <div>
+                  <strong className="text-primary font-mono text-[9px] uppercase block mb-1">Concurrency & Performance</strong>
+                  <p>{t('caseStudy.boonraksa.productionReality.concurrency')}</p>
+                </div>
+                <div>
+                  <strong className="text-primary font-mono text-[9px] uppercase block mb-1">User Behavior & Error Recovery</strong>
+                  <p>{t('caseStudy.boonraksa.productionReality.behavior')}</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* 10 — System Architecture */}
+          <section>
+            <SectionLabel n="10" label={t('caseStudy.sections.architecture')} />
             <div className="flex flex-col divide-y divide-rule">
               {project.architecture.map((a, i) => (
                 <div key={a.label} className="py-5 first:pt-0">
@@ -476,9 +781,9 @@ getOrderActionMap(order, user)
             </div>
           </section>
 
-          {/* 06 — Tech Stack */}
+          {/* 11 — Full Stack */}
           <section>
-            <SectionLabel n="06" label={t('caseStudy.sections.stack')} />
+            <SectionLabel n="11" label={t('caseStudy.sections.stack')} />
             <div className="flex flex-col divide-y divide-rule">
               {project.techStack.map((cat) => (
                 <div key={cat.category} className="py-5 first:pt-0">

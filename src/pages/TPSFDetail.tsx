@@ -5,13 +5,32 @@ import { useTranslation } from 'react-i18next'
 import { projects } from '../data/projects'
 import Navbar from '../components/layout/Navbar'
 import Footer from '../components/layout/Footer'
+import { usePageMetadata } from '../hooks/usePageMetadata'
+import JSONLD from '../components/layout/JSONLD'
 
 const project = projects.find(p => p.id === 'tpsf-eila')!
 
+interface SecurityItem {
+  title: string
+  desc: string
+}
+
+interface ChallengeItem {
+  title: string
+  problem: string
+  decision: string
+  result: string
+}
+
+interface DecisionItem {
+  question: string
+  answer: string
+}
+
 const fade = (delay = 0) => ({
-  initial: { opacity: 0, y: 12 },
+  initial: { opacity: 1, y: 0 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6, delay },
+  transition: { duration: 0, delay },
 })
 
 function SectionLabel({ n, label }: { n: string; label: string }) {
@@ -170,6 +189,29 @@ export default function TPSFDetail() {
   const { t } = useTranslation()
   useEffect(() => { window.scrollTo(0, 0) }, [])
 
+  // SEO Setup
+  usePageMetadata({
+    title: `PSU TPSF EILA — ${t('projects.tpsf-eila.subtitle')}`,
+    description: t('projects.tpsf-eila.description'),
+    path: '/projects/tpsf-eila',
+    ogImage: '/assets/og/tpsf.png'
+  })
+
+  // Structured Data
+  const schemaData = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareSourceCode',
+    'name': 'PSU TPSF EILA',
+    'description': t('projects.tpsf-eila.description'),
+    'codeRepository': 'https://github.com/Jayxxx1/TPSF_EILA',
+    'programmingLanguage': ['JavaScript'],
+    'runtimePlatform': 'Node.js',
+    'author': {
+      '@type': 'Person',
+      'name': 'Chinnakrit'
+    }
+  }
+
   const getMetricLabel = (originalLabel: string) => {
     const keyMap: Record<string, string> = {
       'User Roles': 'roles',
@@ -197,6 +239,7 @@ export default function TPSFDetail() {
 
   return (
     <div className="min-h-screen">
+      <JSONLD data={schemaData} />
       <Navbar />
 
       {/* Header */}
@@ -252,6 +295,45 @@ export default function TPSFDetail() {
         </div>
       </div>
 
+      {/* Executive Summary Panel */}
+      <div className="border-b border-rule bg-bg-surface/10 py-12">
+        <div className="site-container">
+          <div className="border border-rule p-8 bg-[#10100e] max-w-5xl mx-auto">
+            <span className="mono-label text-accent uppercase tracking-wider block mb-6">{t('caseStudy.tpsf.execSummary.title')}</span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-xs">
+              <div className="space-y-4">
+                <div>
+                  <strong className="text-primary font-mono text-[10px] uppercase block mb-1">{t('caseStudy.tpsf.execSummary.system')}</strong>
+                  <span className="text-secondary leading-relaxed">{t('caseStudy.tpsf.execSummary.systemVal')}</span>
+                </div>
+                <div>
+                  <strong className="text-primary font-mono text-[10px] uppercase block mb-1">{t('caseStudy.tpsf.execSummary.operators')}</strong>
+                  <span className="text-secondary leading-relaxed">{t('caseStudy.tpsf.execSummary.operatorsVal')}</span>
+                </div>
+                <div>
+                  <strong className="text-primary font-mono text-[10px] uppercase block mb-1">{t('caseStudy.tpsf.execSummary.purpose')}</strong>
+                  <span className="text-secondary leading-relaxed">{t('caseStudy.tpsf.execSummary.purposeVal')}</span>
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <strong className="text-primary font-mono text-[10px] uppercase block mb-1">{t('caseStudy.tpsf.execSummary.complexity')}</strong>
+                  <span className="text-secondary leading-relaxed">{t('caseStudy.tpsf.execSummary.complexityVal')}</span>
+                </div>
+                <div>
+                  <strong className="text-primary font-mono text-[10px] uppercase block mb-1">{t('caseStudy.tpsf.execSummary.deployment')}</strong>
+                  <span className="text-secondary leading-relaxed">{t('caseStudy.tpsf.execSummary.deploymentVal')}</span>
+                </div>
+                <div>
+                  <strong className="text-primary font-mono text-[10px] uppercase block mb-1">{t('caseStudy.tpsf.execSummary.focus')}</strong>
+                  <span className="text-secondary leading-relaxed accent-line block">{t('caseStudy.tpsf.execSummary.focusVal')}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="site-container py-20">
         <div className="max-w-5xl mx-auto space-y-24">
 
@@ -282,6 +364,22 @@ export default function TPSFDetail() {
           <section>
             <SectionLabel n="02" label={t('caseStudy.sections.assessmentWorkflow')} />
             <div className="space-y-8">
+              {/* Layered Readability Panel */}
+              <div className="border border-rule p-6 bg-[#10100e] max-w-4xl">
+                <p className="font-display text-[15px] text-primary italic leading-relaxed mb-6">
+                  {t('caseStudy.tpsf.workflow.summary')}
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-[11px] leading-relaxed">
+                  <div>
+                    <strong className="text-accent font-mono text-[9px] uppercase block mb-1">Business Context</strong>
+                    <p className="text-secondary">{t('caseStudy.tpsf.workflow.purpose')}</p>
+                  </div>
+                  <div>
+                    <strong className="text-primary font-mono text-[9px] uppercase block mb-1">Implementation Strategy</strong>
+                    <p className="text-secondary">{t('caseStudy.tpsf.workflow.implementation')}</p>
+                  </div>
+                </div>
+              </div>
               <div className="editorial-grid items-start">
                 <div>
                   <h2 className="display-xs text-primary mb-4">
@@ -302,8 +400,11 @@ const result = await client.query(
 )
 // rowCount === 0 → concurrent modification
 // → ROLLBACK + throw ConflictError`}</pre>
-                  <p className="text-xs text-muted">
+                  <p className="text-xs text-muted leading-relaxed">
                     {t('caseStudy.tpsf.workflow.p2')}
+                  </p>
+                  <p className="text-xs text-secondary leading-relaxed mt-2 pt-2 border-t border-rule/30">
+                    {t('caseStudy.tpsf.workflow.detail')}
                   </p>
                 </div>
               </div>
@@ -334,28 +435,50 @@ const result = await client.query(
           {/* 03 — Role System / Policy */}
           <section>
             <SectionLabel n="03" label={t('caseStudy.sections.access')} />
-            <div className="editorial-grid items-start">
-              <div>
-                <h2 className="display-xs text-primary mb-4">
-                  {t('caseStudy.tpsf.access.title')}<br /><em className="text-ink-muted">{t('caseStudy.tpsf.access.titleItalic')}</em>
-                </h2>
-                <div className="flex flex-wrap gap-1.5 mb-4">
-                  {project.roles?.map((role) => (
-                    <span key={role} className="tag">{role}</span>
-                  ))}
+            <div className="space-y-10">
+              {/* Layered Readability Panel */}
+              <div className="border border-rule p-6 bg-[#10100e] max-w-4xl">
+                <p className="font-display text-[15px] text-primary italic leading-relaxed mb-6">
+                  {t('caseStudy.tpsf.access.summary')}
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-[11px] leading-relaxed">
+                  <div>
+                    <strong className="text-accent font-mono text-[9px] uppercase block mb-1">Business Context</strong>
+                    <p className="text-secondary">{t('caseStudy.tpsf.access.purpose')}</p>
+                  </div>
+                  <div>
+                    <strong className="text-primary font-mono text-[9px] uppercase block mb-1">Implementation Strategy</strong>
+                    <p className="text-secondary">{t('caseStudy.tpsf.access.implementation')}</p>
+                  </div>
                 </div>
               </div>
-              <div className="space-y-4">
-                {[
-                  [t('caseStudy.tpsf.access.layer1Title'), t('caseStudy.tpsf.access.layer1Desc')],
-                  [t('caseStudy.tpsf.access.layer2Title'), t('caseStudy.tpsf.access.layer2Desc')],
-                  [t('caseStudy.tpsf.access.layer3Title'), t('caseStudy.tpsf.access.layer3Desc')],
-                ].map(([title, desc]) => (
-                  <div key={title} className="border-l border-rule pl-4 py-1">
-                    <div className="text-xs font-medium text-primary mb-1">{title}</div>
-                    <div className="text-xs text-muted leading-relaxed">{desc}</div>
+
+              <div className="editorial-grid items-start">
+                <div>
+                  <h2 className="display-xs text-primary mb-4">
+                    {t('caseStudy.tpsf.access.title')}<br /><em className="text-ink-muted">{t('caseStudy.tpsf.access.titleItalic')}</em>
+                  </h2>
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    {project.roles?.map((role) => (
+                      <span key={role} className="tag">{role}</span>
+                    ))}
                   </div>
-                ))}
+                </div>
+                <div className="space-y-4">
+                  {[
+                    [t('caseStudy.tpsf.access.layer1Title'), t('caseStudy.tpsf.access.layer1Desc')],
+                    [t('caseStudy.tpsf.access.layer2Title'), t('caseStudy.tpsf.access.layer2Desc')],
+                    [t('caseStudy.tpsf.access.layer3Title'), t('caseStudy.tpsf.access.layer3Desc')],
+                  ].map(([title, desc]) => (
+                    <div key={title} className="border-l border-rule pl-4 py-1">
+                      <div className="text-xs font-medium text-primary mb-1">{title}</div>
+                      <div className="text-xs text-muted leading-relaxed">{desc}</div>
+                    </div>
+                  ))}
+                  <p className="text-xs text-muted leading-relaxed pt-2">
+                    {t('caseStudy.tpsf.access.detail')}
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -406,11 +529,11 @@ crypto.timingSafeEqual(
             </div>
           </section>
 
-          {/* 05 — Security */}
+          {/* 05 — Security Architecture */}
           <section>
             <SectionLabel n="05" label={t('caseStudy.sections.securityArch')} />
             <div className="flex flex-col divide-y divide-rule">
-              {((t('caseStudy.tpsf.security', { returnObjects: true }) as any[]) || []).map((s: { title: string; desc: string }, i: number) => (
+              {((t('caseStudy.tpsf.security', { returnObjects: true }) as SecurityItem[]) || []).map((s, i) => (
                 <div key={i} className="py-5 first:pt-0">
                   <div className="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-8">
                     <span className="text-xs font-medium text-secondary sm:w-48 flex-shrink-0">{s.title}</span>
@@ -421,19 +544,197 @@ crypto.timingSafeEqual(
             </div>
           </section>
 
-          {/* 06 — Engineering Highlights */}
+          {/* 06 — Engineering Challenges & Decisions */}
           <section>
-            <SectionLabel n="06" label={t('caseStudy.sections.highlights')} />
+            <SectionLabel n="06" label={t('caseStudy.sections.challenges')} />
+            <div className="space-y-12">
+              {((t('caseStudy.tpsf.challenges', { returnObjects: true }) as ChallengeItem[]) || []).map((c, i) => (
+                <div key={i} className="editorial-grid items-start pb-8 border-b border-rule/30 last:border-b-0 last:pb-0">
+                  <div>
+                    <span className="section-number block mb-2">CHALLENGE {String(i + 1).padStart(2, '0')}</span>
+                    <h3 className="text-sm font-semibold text-primary">{c.title}</h3>
+                  </div>
+                  <div className="space-y-4">
+                    <p className="text-xs text-secondary leading-relaxed">
+                      <strong className="text-primary font-mono text-[10px] uppercase block mb-1">Operational Problem:</strong>
+                      {c.problem}
+                    </p>
+                    <p className="text-xs text-secondary leading-relaxed">
+                      <strong className="text-accent font-mono text-[10px] uppercase block mb-1">Engineering Decision:</strong>
+                      {c.decision}
+                    </p>
+                    <p className="text-xs text-secondary leading-relaxed accent-line">
+                      <strong className="text-primary font-mono text-[10px] uppercase block mb-1">Result:</strong>
+                      {c.result}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* 07 — Why This Architecture */}
+          <section>
+            <SectionLabel n="07" label={t('caseStudy.sections.decisions')} />
+            <div className="space-y-10">
+              {((t('caseStudy.tpsf.decisions', { returnObjects: true }) as DecisionItem[]) || []).map((d, i) => (
+                <div key={i} className="grid grid-cols-1 md:grid-cols-[1.5fr_2fr] gap-8 pb-8 border-b border-rule/30 last:border-b-0 last:pb-0">
+                  <div>
+                    <h4 className="text-xs font-medium text-primary mb-2 font-mono text-accent">Q: {d.question}</h4>
+                    <p className="text-xs text-secondary leading-relaxed">{d.answer}</p>
+                  </div>
+                  <div>
+                    {i === 0 && (
+                      <div className="border border-rule p-4 bg-[#10100e]">
+                        <a
+                          href="https://github.com/Jayxxx1/TPSF_EILA/blob/main/backend/src/services/status.service.js"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mono-label text-[9px] text-accent hover:underline block mb-2"
+                        >
+                          Explicit SQL Row Lock Transaction ↗
+                        </a>
+                        <pre className="text-[10px] text-secondary font-mono leading-normal">{`const client = await pool.connect();
+try {
+  await client.query('BEGIN');
+  const result = await client.query(
+    \`UPDATE requests SET status = $1 
+     WHERE id = $2 AND status = 'SUBMITTED' 
+     RETURNING id\`,
+    ['UNDERREVIEW_EILA', requestId]
+  );
+  if (result.rowCount === 0) {
+    throw new ConflictError('CONCURRENT_MODIFICATION');
+  }
+  await client.query('COMMIT');
+} catch (e) {
+  await client.query('ROLLBACK');
+  throw e;
+} finally { client.release(); }`}</pre>
+                      </div>
+                    )}
+                    {i === 1 && (
+                      <div className="border border-rule p-4 bg-[#10100e]">
+                        <a
+                          href="https://github.com/Jayxxx1/TPSF_EILA/blob/main/backend/src/middlewares/auth.js"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mono-label text-[9px] text-accent hover:underline block mb-2"
+                        >
+                          Timing-Safe CSRF Verification ↗
+                        </a>
+                        <pre className="text-[10px] text-secondary font-mono leading-normal">{`import crypto from 'crypto';
+export function verifyCsrfToken(csrfHeader, csrfCookie) {
+  const headerBuf = Buffer.from(csrfHeader);
+  const cookieBuf = Buffer.from(csrfCookie);
+  if (headerBuf.length !== cookieBuf.length) {
+    return false;
+  }
+  return crypto.timingSafeEqual(headerBuf, cookieBuf);
+}`}</pre>
+                      </div>
+                    )}
+                    {i === 2 && (
+                      <div className="border border-rule p-4 bg-[#10100e]">
+                        <a
+                          href="https://github.com/Jayxxx1/TPSF_EILA/blob/main/backend/src/services/upload.service.js"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mono-label text-[9px] text-accent hover:underline block mb-2"
+                        >
+                          Upload Binary Scanner ↗
+                        </a>
+                        <pre className="text-[10px] text-secondary font-mono leading-normal">{`const DANGEROUS_MARKERS = [
+  '/JavaScript', '/OpenAction', '/Launch', '/EmbeddedFile', '/AcroForm'
+];
+export function scanPdfBuffer(buffer) {
+  const content = buffer.toString('utf-8');
+  for (const marker of DANGEROUS_MARKERS) {
+    if (content.includes(marker)) {
+      throw new ValidationError(\`MALICIOUS_PDF_MARKER: \${marker}\`);
+    }
+  }
+}`}</pre>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* 08 — Operational Realities & Maintenance */}
+          <section>
+            <SectionLabel n="08" label={t('caseStudy.sections.productionReality')} />
+            <div className="editorial-grid items-start">
+              <div>
+                <h3 className="text-sm font-semibold text-primary mb-2">
+                  {t('caseStudy.tpsf.productionReality.title')}
+                </h3>
+                <p className="text-xs text-secondary leading-relaxed">
+                  Academic operations exist within strict institutional sandboxes. Sustaining an enterprise-wide application requires accommodating hardware limits, peak submission loads, and raw data inconsistencies.
+                </p>
+              </div>
+              <div className="space-y-6 text-xs text-secondary leading-relaxed">
+                <div>
+                  <strong className="text-primary font-mono text-[9px] uppercase block mb-1">Database Migrations & Maintenance</strong>
+                  <p>{t('caseStudy.tpsf.productionReality.maintenance')}</p>
+                </div>
+                <div>
+                  <strong className="text-primary font-mono text-[9px] uppercase block mb-1">Concurrency & Connection Safety</strong>
+                  <p>{t('caseStudy.tpsf.productionReality.concurrency')}</p>
+                </div>
+                <div>
+                  <strong className="text-primary font-mono text-[9px] uppercase block mb-1">Data Quality & Normalization Realities</strong>
+                  <p>{t('caseStudy.tpsf.productionReality.behavior')}</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* 09 — Reality & System Scars */}
+          <section>
+            <SectionLabel n="09" label={t('caseStudy.sections.scars')} />
+            <div className="editorial-grid items-start">
+              <div>
+                <h3 className="text-sm font-semibold text-primary mb-2">System Evolution in Production</h3>
+                <p className="text-xs text-secondary leading-relaxed">
+                  Academic assessment cycles are subject to strict institutional policies. Evolving the system to match university structures required addressing real-world edge cases.
+                </p>
+              </div>
+              <div className="space-y-4">
+                {((t('caseStudy.tpsf.scars', { returnObjects: true }) as string[]) || []).map((scar, i) => (
+                  <div key={i} className="flex gap-4 items-start border-l border-rule pl-4 py-1">
+                    <span className="font-mono text-[10px] text-accent mt-0.5">{String(i + 1).padStart(2, '0')}</span>
+                    <p className="text-xs text-muted leading-relaxed">{scar}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* 10 — Full-Stack Ownership & Context */}
+          <section>
+            <SectionLabel n="10" label={t('caseStudy.sections.ownership')} />
+            <div className="editorial-grid items-start">
+              <div>
+                <h3 className="text-sm font-semibold text-primary mb-2">
+                  {t('caseStudy.tpsf.ownership.title')}
+                </h3>
+              </div>
+              <div className="space-y-4 text-xs text-secondary leading-relaxed">
+                <p>{t('caseStudy.tpsf.ownership.p1')}</p>
+                <p className="accent-line">{t('caseStudy.tpsf.ownership.p2')}</p>
+              </div>
+            </div>
+          </section>
+
+          {/* 11 — Engineering Highlights */}
+          <section>
+            <SectionLabel n="11" label={t('caseStudy.sections.highlights')} />
             <div className="flex flex-col divide-y divide-rule">
               {project.highlights.map((h, i) => (
-                <motion.div
-                  key={h.title}
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.05 }}
-                  className="py-8 first:pt-0"
-                >
+                <div key={h.title} className="py-8 first:pt-0">
                   <div className="editorial-grid items-start">
                     <div>
                       <div className="flex items-center gap-3 mb-2">
@@ -449,18 +750,35 @@ crypto.timingSafeEqual(
                         {t(`projects.tpsf-eila.highlights.${i}.description`, h.description)}
                       </p>
                       {h.code && (
-                        <pre className="code-block text-[0.7rem]">{h.code}</pre>
+                        <>
+                          <pre className="code-block text-[0.7rem]">{h.code}</pre>
+                          <div className="mt-2 text-right">
+                            <a
+                              href={
+                                i === 0 ? "https://github.com/Jayxxx1/TPSF_EILA/blob/main/backend/src/middlewares/auth.js" :
+                                i === 1 ? "https://github.com/Jayxxx1/TPSF_EILA/blob/main/backend/src/services/status.service.js" :
+                                i === 3 ? "https://github.com/Jayxxx1/TPSF_EILA/blob/main/backend/src/services/upload.service.js" :
+                                project.github
+                              }
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[10px] text-accent hover:underline font-mono inline-flex items-center gap-1"
+                            >
+                              Inspect implementation in repository &rarr;
+                            </a>
+                          </div>
+                        </>
                       )}
                     </div>
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
           </section>
 
-          {/* 07 — Tech Stack */}
+          {/* 12 — Full Stack */}
           <section>
-            <SectionLabel n="07" label={t('caseStudy.sections.stack')} />
+            <SectionLabel n="12" label={t('caseStudy.sections.stack')} />
             <div className="flex flex-col divide-y divide-rule">
               {project.techStack.map((cat) => (
                 <div key={cat.category} className="py-5 first:pt-0">

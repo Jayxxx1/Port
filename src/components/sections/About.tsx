@@ -4,9 +4,9 @@ import { useTranslation } from 'react-i18next'
 
 function revealProps(isInView: boolean, delay = 0) {
   return {
-    initial: { opacity: 0, y: 12 },
-    animate: isInView ? { opacity: 1, y: 0 } : {},
-    transition: { duration: 0.6, delay },
+    initial: { opacity: 1, y: 0 },
+    animate: { opacity: isInView ? 1 : 1, y: 0 },
+    transition: { duration: 0, delay },
   }
 }
 
@@ -59,6 +59,7 @@ export default function About() {
             <motion.div {...revealProps(isInView, 0.44)} className="border-t border-rule pt-8 flex flex-col divide-y divide-rule">
               {[
                 ['currently', t('about.keys.currently'), t('about.values.currently')],
+                ['now', t('about.keys.now'), t('about.values.now')],
                 ['based', t('about.keys.based'), t('about.values.based')],
                 ['github', t('about.keys.github'), t('about.values.github')],
                 ['focus', t('about.keys.focus'), t('about.values.focus')],

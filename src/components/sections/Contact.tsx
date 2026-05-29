@@ -4,9 +4,9 @@ import { useTranslation } from 'react-i18next'
 
 function revealProps(isInView: boolean, delay = 0) {
   return {
-    initial: { opacity: 0, y: 12 },
-    animate: isInView ? { opacity: 1, y: 0 } : {},
-    transition: { duration: 0.6, delay },
+    initial: { opacity: 1, y: 0 },
+    animate: { opacity: isInView ? 1 : 1, y: 0 },
+    transition: { duration: 0, delay },
   }
 }
 

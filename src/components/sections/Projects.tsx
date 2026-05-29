@@ -6,9 +6,9 @@ import { projects } from '../../data/projects'
 
 function revealProps(isInView: boolean, delay = 0) {
   return {
-    initial: { opacity: 0, y: 12 },
-    animate: isInView ? { opacity: 1, y: 0 } : {},
-    transition: { duration: 0.6, delay },
+    initial: { opacity: 1, y: 0 },
+    animate: { opacity: isInView ? 1 : 1, y: 0 },
+    transition: { duration: 0, delay },
   }
 }
 
@@ -83,6 +83,11 @@ export default function Projects() {
                       <span className="text-secondary text-sm">{t(`projects.${project.id}.subtitle`)}</span>
                       <span className="text-muted text-xs">·</span>
                       <span className="text-accent text-xs font-mono">{t(`projects.${project.id}.role`)}</span>
+                      <span className="text-muted text-xs">·</span>
+                      <span className="inline-flex items-center gap-1.5 text-xs text-muted font-mono">
+                        <span className="status-dot" style={{ backgroundColor: '#4a7c59' }} />
+                        {project.id === 'boonraksa' ? 'Active Production System' : 'Deployed at PSU'}
+                      </span>
                     </div>
 
                     {/* Description */}

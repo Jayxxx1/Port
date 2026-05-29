@@ -2,9 +2,9 @@ import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 
 const fadeUp = (delay = 0) => ({
-  initial: { opacity: 0, y: 16 },
+  initial: { opacity: 1, y: 0 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.65, delay },
+  transition: { duration: 0, delay },
 })
 
 export default function Hero() {

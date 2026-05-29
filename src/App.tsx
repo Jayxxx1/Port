@@ -1,12 +1,22 @@
-import { useEffect } from 'react'
+import { useEffect, lazy, Suspense } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import HomePage from './pages/HomePage'
-import BoonraksaDetail from './pages/BoonraksaDetail'
-import TPSFDetail from './pages/TPSFDetail'
+
+const HomePage = lazy(() => import('./pages/HomePage'))
+const BoonraksaDetail = lazy(() => import('./pages/BoonraksaDetail'))
+const TPSFDetail = lazy(() => import('./pages/TPSFDetail'))
+const Resume = lazy(() => import('./pages/Resume'))
+
+function PageLoader() {
+  return (
+    <div className="min-h-screen bg-[#0d0d0b] flex items-center justify-center font-mono text-[10px] text-muted tracking-wider uppercase">
+      Loading...
+    </div>
+  )
+}
 
 function LanguageWrapper() {
-  const { t, i18n } = useTranslation()
+  const { i18n } = useTranslation()
 
   useEffect(() => {
     document.documentElement.lang = i18n.language
@@ -17,14 +27,7 @@ function LanguageWrapper() {
       document.body.classList.add('lang-en')
       document.body.classList.remove('lang-th')
     }
-
-    // Dynamic SEO Metadata updates
-    document.title = t('meta.title')
-    const metaDesc = document.querySelector('meta[name="description"]')
-    if (metaDesc) {
-      metaDesc.setAttribute('content', t('meta.description'))
-    }
-  }, [i18n.language, t])
+  }, [i18n.language])
 
   return null
 }
@@ -33,11 +36,14 @@ export default function App() {
   return (
     <BrowserRouter>
       <LanguageWrapper />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/projects/boonraksa" element={<BoonraksaDetail />} />
-        <Route path="/projects/tpsf-eila" element={<TPSFDetail />} />
-      </Routes>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/projects/boonraksa" element={<BoonraksaDetail />} />
+          <Route path="/projects/tpsf-eila" element={<TPSFDetail />} />
+          <Route path="/resume" element={<Resume />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   )
 }

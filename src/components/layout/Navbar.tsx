@@ -21,7 +21,10 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  useEffect(() => { setOpen(false) }, [location])
+  useEffect(() => {
+    const handle = requestAnimationFrame(() => setOpen(false))
+    return () => cancelAnimationFrame(handle)
+  }, [location])
 
   return (
     <header
@@ -46,6 +49,12 @@ export default function Navbar() {
               {link.label}
             </a>
           ))}
+          <Link
+            to="/resume"
+            className="text-[0.8125rem] font-medium text-secondary hover:text-primary transition-colors duration-200"
+          >
+            {t('nav.links.resume')}
+          </Link>
           <a
             href="https://github.com/Jayxxx1"
             target="_blank"
@@ -106,6 +115,13 @@ export default function Navbar() {
                   {link.label}
                 </a>
               ))}
+              <Link
+                to="/resume"
+                onClick={() => setOpen(false)}
+                className="text-sm text-secondary hover:text-primary transition-colors"
+              >
+                {t('nav.links.resume')}
+              </Link>
               <a
                 href="https://github.com/Jayxxx1"
                 target="_blank"
