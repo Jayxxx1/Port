@@ -126,6 +126,7 @@ interface EvidenceCardProps {
 }
 
 function EvidenceCard({ src, caption, context, significance }: EvidenceCardProps) {
+  const { t } = useTranslation()
   return (
     <div className="border border-rule bg-bg-surface overflow-hidden my-10">
       <div className="aspect-[16/9] w-full bg-[#10100e] relative flex items-center justify-center overflow-hidden border-b border-rule">
@@ -156,15 +157,15 @@ function EvidenceCard({ src, caption, context, significance }: EvidenceCardProps
       </div>
       <div className="p-6 grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-6 border-t border-rule/50">
         <div>
-          <span className="mono-label text-accent uppercase tracking-wider block mb-1">Operational Evidence</span>
+          <span className="mono-label text-accent uppercase tracking-wider block mb-1">{t('caseStudy.labels.operationalEvidence')}</span>
           <h4 className="text-sm font-semibold text-primary">{caption}</h4>
         </div>
         <div className="space-y-3">
           <p className="text-secondary text-xs leading-relaxed">
-            <strong className="text-primary">System Context:</strong> {context}
+            <strong className="text-primary">{t('caseStudy.labels.systemContext')}</strong> {context}
           </p>
           <p className="text-secondary text-xs leading-relaxed">
-            <strong className="text-primary">Architectural Significance:</strong> {significance}
+            <strong className="text-primary">{t('caseStudy.labels.architecturalSignificance')}</strong> {significance}
           </p>
         </div>
       </div>
@@ -174,6 +175,7 @@ function EvidenceCard({ src, caption, context, significance }: EvidenceCardProps
 
 export default function BoonraksaDetail() {
   const { t } = useTranslation()
+  const decisionsLinks = (t('caseStudy.boonraksa.decisionsLinks', { returnObjects: true }) as string[]) || []
   useEffect(() => { window.scrollTo(0, 0) }, [])
 
   // SEO Setup
@@ -556,7 +558,7 @@ getOrderActionMap(order, user)
                               rel="noopener noreferrer"
                               className="text-[10px] text-accent hover:underline font-mono inline-flex items-center gap-1"
                             >
-                              Inspect implementation in repository &rarr;
+                              {t('caseStudy.labels.inspectRepo')}
                             </a>
                           </div>
                         </>
@@ -569,7 +571,7 @@ getOrderActionMap(order, user)
 
             {/* Linked order diagram */}
             <div className="border-t border-rule pt-10 mt-10">
-              <span className="mono-label text-accent uppercase tracking-wider block mb-4">Database Operations: Linked Order Transitions</span>
+              <span className="mono-label text-accent uppercase tracking-wider block mb-4">{t('caseStudy.labels.dbOpsLinkedOrder')}</span>
               <BoonraksaLinkedOrderDiagram />
             </div>
 
@@ -594,15 +596,15 @@ getOrderActionMap(order, user)
                   </div>
                   <div className="space-y-4">
                     <p className="text-xs text-secondary leading-relaxed">
-                      <strong className="text-primary font-mono text-[10px] uppercase block mb-1">Operational Problem:</strong>
+                      <strong className="text-primary font-mono text-[10px] uppercase block mb-1">{t('caseStudy.labels.operationalProblem')}</strong>
                       {c.problem}
                     </p>
                     <p className="text-xs text-secondary leading-relaxed">
-                      <strong className="text-accent font-mono text-[10px] uppercase block mb-1">Engineering Decision:</strong>
+                      <strong className="text-accent font-mono text-[10px] uppercase block mb-1">{t('caseStudy.labels.engineeringDecision')}</strong>
                       {c.decision}
                     </p>
                     <p className="text-xs text-secondary leading-relaxed accent-line">
-                      <strong className="text-primary font-mono text-[10px] uppercase block mb-1">Result:</strong>
+                      <strong className="text-primary font-mono text-[10px] uppercase block mb-1">{t('caseStudy.labels.result')}</strong>
                       {c.result}
                     </p>
                   </div>
@@ -618,7 +620,7 @@ getOrderActionMap(order, user)
               {((t('caseStudy.boonraksa.decisions', { returnObjects: true }) as DecisionItem[]) || []).map((d, i) => (
                 <div key={i} className="grid grid-cols-1 md:grid-cols-[1.5fr_2fr] gap-8 pb-8 border-b border-rule/30 last:border-b-0 last:pb-0">
                   <div>
-                    <h4 className="text-xs font-medium text-primary mb-2 font-mono text-accent">Q: {d.question}</h4>
+                    <h4 className="text-xs font-medium text-primary mb-2 font-mono text-accent">{t('caseStudy.labels.qPrefix')}{d.question}</h4>
                     <p className="text-xs text-secondary leading-relaxed">{d.answer}</p>
                   </div>
                   <div>
@@ -630,7 +632,7 @@ getOrderActionMap(order, user)
                           rel="noopener noreferrer"
                           className="mono-label text-[9px] text-accent hover:underline block mb-2"
                         >
-                          Prisma Atomic Group Transaction Excerpt ↗
+                          {decisionsLinks[0] || 'Link ↗'}
                         </a>
                         <pre className="text-[10px] text-secondary font-mono leading-normal">{`await prisma.$transaction(async (tx) => {
   const group = await tx.orderGroup.findUnique({
@@ -655,7 +657,7 @@ getOrderActionMap(order, user)
                           rel="noopener noreferrer"
                           className="mono-label text-[9px] text-accent hover:underline block mb-2"
                         >
-                          RBAC Pure-Function Definition ↗
+                          {decisionsLinks[1] || 'Link ↗'}
                         </a>
                         <pre className="text-[10px] text-secondary font-mono leading-normal">{`export function canPerformAction(order, action, user) {
   if (user.role === 'ADMIN') return { allowed: true };
@@ -678,7 +680,7 @@ getOrderActionMap(order, user)
                           rel="noopener noreferrer"
                           className="mono-label text-[9px] text-accent hover:underline block mb-2"
                         >
-                          Numeric Rank Guard Logic ↗
+                          {decisionsLinks[2] || 'Link ↗'}
                         </a>
                         <pre className="text-[10px] text-secondary font-mono leading-normal">{`const STATUS_RANKS = {
   DRAFT: 1, ARTWORK_DESIGN: 2, QA_REVIEW: 3, EMBROIDERY: 4, QC: 5, COMPLETED: 6
@@ -703,9 +705,9 @@ export function validateStatusTransition(from, to) {
             <SectionLabel n="07" label={t('caseStudy.sections.scars')} />
             <div className="editorial-grid items-start">
               <div>
-                <h3 className="text-sm font-semibold text-primary mb-2">System Evolution in Production</h3>
+                <h3 className="text-sm font-semibold text-primary mb-2">{t('caseStudy.labels.systemEvolution')}</h3>
                 <p className="text-xs text-secondary leading-relaxed">
-                  Real software processes are messy, iterative, and marked by operational shifts. The following details reflect adjustments made after deployment under real user feedback.
+                  {t('caseStudy.boonraksa.scarsDesc')}
                 </p>
               </div>
               <div className="space-y-4">
@@ -744,20 +746,20 @@ export function validateStatusTransition(from, to) {
                   {t('caseStudy.boonraksa.productionReality.title')}
                 </h3>
                 <p className="text-xs text-secondary leading-relaxed">
-                  Real software operates under physical constraints. Evolving a production platform requires addressing real-world limitations.
+                  {t('caseStudy.boonraksa.productionRealityDesc')}
                 </p>
               </div>
               <div className="space-y-6 text-xs text-secondary leading-relaxed">
                 <div>
-                  <strong className="text-primary font-mono text-[9px] uppercase block mb-1">Database Migrations & Maintenance</strong>
+                  <strong className="text-primary font-mono text-[9px] uppercase block mb-1">{t('caseStudy.labels.dbMigrations')}</strong>
                   <p>{t('caseStudy.boonraksa.productionReality.maintenance')}</p>
                 </div>
                 <div>
-                  <strong className="text-primary font-mono text-[9px] uppercase block mb-1">Concurrency & Performance</strong>
+                  <strong className="text-primary font-mono text-[9px] uppercase block mb-1">{t('caseStudy.labels.concurrencyPerf')}</strong>
                   <p>{t('caseStudy.boonraksa.productionReality.concurrency')}</p>
                 </div>
                 <div>
-                  <strong className="text-primary font-mono text-[9px] uppercase block mb-1">User Behavior & Error Recovery</strong>
+                  <strong className="text-primary font-mono text-[9px] uppercase block mb-1">{t('caseStudy.labels.userBehavior')}</strong>
                   <p>{t('caseStudy.boonraksa.productionReality.behavior')}</p>
                 </div>
               </div>

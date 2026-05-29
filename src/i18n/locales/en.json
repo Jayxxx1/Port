@@ -373,7 +373,14 @@
         "maintenance": "Manufacturing environments require stable, hands-off software. Since deploying the platform, database migrations must execute without locking the main order tables during active shifts. The migration plan uses PostgreSQL command-level lock timeouts to avoid stacking client connections.",
         "concurrency": "We encountered concurrency bottlenecks when multiple operators in the sewing department attempted to update sub-orders in the same group simultaneously. Resolving this required upgrading transaction isolation levels and utilizing raw row-level SELECT FOR UPDATE statements in critical update routes.",
         "behavior": "User input errors are common in high-volume environments. Rather than rejecting inputs with rigid UI validation, we built soft-rollback states that log warnings and flag items for administrative review, balancing data integrity with active work progression."
-      }
+      },
+      "scarsDesc": "Real software processes are messy, iterative, and marked by operational shifts. The following details reflect adjustments made after deployment under real user feedback.",
+      "productionRealityDesc": "Real software operates under physical constraints. Evolving a production platform requires addressing real-world limitations.",
+      "decisionsLinks": [
+        "Prisma Atomic Group Transaction Excerpt ↗",
+        "RBAC Pure-Function Definition ↗",
+        "Numeric Rank Guard Logic ↗"
+      ]
     },
     "tpsf": {
       "problem": {
@@ -507,7 +514,32 @@
         "maintenance": "Deploying software inside university container registry sandbox environments restricts server resources. High memory usage during PDF processing initially led to container crashes. We resolved this by streaming binary buffers and enforcing memory limits via Docker Compose profiles.",
         "concurrency": "During peak evaluation periods, committee evaluators experienced database locks when simultaneously scoring candidates. Implementing explicit table-level lock release sequences in the Express cleanup loops solved the connection starvation issue.",
         "behavior": "Legacy university records frequently contained inconsistent formatting. To avoid system crashes, the data ingestion pipelines were rewritten with flexible validation paths that normalize older string encodings and gracefully fall back to default values."
-      }
+      },
+      "productionRealityDesc": "Academic operations exist within strict institutional sandboxes. Sustaining an enterprise-wide application requires accommodating hardware limits, peak submission loads, and raw data inconsistencies.",
+      "scarsDesc": "Academic assessment cycles are subject to strict institutional policies. Evolving the system to match university structures required addressing real-world edge cases.",
+      "decisionsLinks": [
+        "Explicit SQL Row Lock Transaction ↗",
+        "Timing-Safe CSRF Verification ↗",
+        "Upload Binary Scanner ↗"
+      ]
+    },
+    "labels": {
+      "inspectRepo": "Inspect implementation in repository →",
+      "operationalProblem": "Operational Problem:",
+      "engineeringDecision": "Engineering Decision:",
+      "result": "Result:",
+      "systemEvolution": "System Evolution in Production",
+      "dbMigrations": "Database Migrations & Maintenance",
+      "concurrencyPerf": "Concurrency & Performance",
+      "concurrencySafety": "Concurrency & Connection Safety",
+      "userBehavior": "User Behavior & Error Recovery",
+      "dataQuality": "Data Quality & Normalization Realities",
+      "operationalEvidence": "Operational Evidence",
+      "systemContext": "System Context:",
+      "architecturalSignificance": "Architectural Significance:",
+      "qPrefix": "Q: ",
+      "securityArchTitle": "Security Architecture: 3-Layer Policy Verification",
+      "dbOpsLinkedOrder": "Database Operations: Linked Order Transitions"
     }
   },
   "resume": {

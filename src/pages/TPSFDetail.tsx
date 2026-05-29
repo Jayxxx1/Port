@@ -187,6 +187,7 @@ function TPSFPolicyCheckDiagram() {
 
 export default function TPSFDetail() {
   const { t } = useTranslation()
+  const decisionsLinks = (t('caseStudy.tpsf.decisionsLinks', { returnObjects: true }) as string[]) || []
   useEffect(() => { window.scrollTo(0, 0) }, [])
 
   // SEO Setup
@@ -484,7 +485,7 @@ const result = await client.query(
 
             {/* Policy check diagram */}
             <div className="border-t border-rule pt-10 mt-10">
-              <span className="mono-label text-accent uppercase tracking-wider block mb-4">Security Architecture: 3-Layer Policy Verification</span>
+              <span className="mono-label text-accent uppercase tracking-wider block mb-4">{t('caseStudy.labels.securityArchTitle')}</span>
               <TPSFPolicyCheckDiagram />
             </div>
           </section>
@@ -556,15 +557,15 @@ crypto.timingSafeEqual(
                   </div>
                   <div className="space-y-4">
                     <p className="text-xs text-secondary leading-relaxed">
-                      <strong className="text-primary font-mono text-[10px] uppercase block mb-1">Operational Problem:</strong>
+                      <strong className="text-primary font-mono text-[10px] uppercase block mb-1">{t('caseStudy.labels.operationalProblem')}</strong>
                       {c.problem}
                     </p>
                     <p className="text-xs text-secondary leading-relaxed">
-                      <strong className="text-accent font-mono text-[10px] uppercase block mb-1">Engineering Decision:</strong>
+                      <strong className="text-accent font-mono text-[10px] uppercase block mb-1">{t('caseStudy.labels.engineeringDecision')}</strong>
                       {c.decision}
                     </p>
                     <p className="text-xs text-secondary leading-relaxed accent-line">
-                      <strong className="text-primary font-mono text-[10px] uppercase block mb-1">Result:</strong>
+                      <strong className="text-primary font-mono text-[10px] uppercase block mb-1">{t('caseStudy.labels.result')}</strong>
                       {c.result}
                     </p>
                   </div>
@@ -580,7 +581,7 @@ crypto.timingSafeEqual(
               {((t('caseStudy.tpsf.decisions', { returnObjects: true }) as DecisionItem[]) || []).map((d, i) => (
                 <div key={i} className="grid grid-cols-1 md:grid-cols-[1.5fr_2fr] gap-8 pb-8 border-b border-rule/30 last:border-b-0 last:pb-0">
                   <div>
-                    <h4 className="text-xs font-medium text-primary mb-2 font-mono text-accent">Q: {d.question}</h4>
+                    <h4 className="text-xs font-medium text-primary mb-2 font-mono text-accent">{t('caseStudy.labels.qPrefix')}{d.question}</h4>
                     <p className="text-xs text-secondary leading-relaxed">{d.answer}</p>
                   </div>
                   <div>
@@ -592,7 +593,7 @@ crypto.timingSafeEqual(
                           rel="noopener noreferrer"
                           className="mono-label text-[9px] text-accent hover:underline block mb-2"
                         >
-                          Explicit SQL Row Lock Transaction ↗
+                          {decisionsLinks[0] || 'Link ↗'}
                         </a>
                         <pre className="text-[10px] text-secondary font-mono leading-normal">{`const client = await pool.connect();
 try {
@@ -621,7 +622,7 @@ try {
                           rel="noopener noreferrer"
                           className="mono-label text-[9px] text-accent hover:underline block mb-2"
                         >
-                          Timing-Safe CSRF Verification ↗
+                          {decisionsLinks[1] || 'Link ↗'}
                         </a>
                         <pre className="text-[10px] text-secondary font-mono leading-normal">{`import crypto from 'crypto';
 export function verifyCsrfToken(csrfHeader, csrfCookie) {
@@ -642,7 +643,7 @@ export function verifyCsrfToken(csrfHeader, csrfCookie) {
                           rel="noopener noreferrer"
                           className="mono-label text-[9px] text-accent hover:underline block mb-2"
                         >
-                          Upload Binary Scanner ↗
+                          {decisionsLinks[2] || 'Link ↗'}
                         </a>
                         <pre className="text-[10px] text-secondary font-mono leading-normal">{`const DANGEROUS_MARKERS = [
   '/JavaScript', '/OpenAction', '/Launch', '/EmbeddedFile', '/AcroForm'
@@ -672,20 +673,20 @@ export function scanPdfBuffer(buffer) {
                   {t('caseStudy.tpsf.productionReality.title')}
                 </h3>
                 <p className="text-xs text-secondary leading-relaxed">
-                  Academic operations exist within strict institutional sandboxes. Sustaining an enterprise-wide application requires accommodating hardware limits, peak submission loads, and raw data inconsistencies.
+                  {t('caseStudy.tpsf.productionRealityDesc')}
                 </p>
               </div>
               <div className="space-y-6 text-xs text-secondary leading-relaxed">
                 <div>
-                  <strong className="text-primary font-mono text-[9px] uppercase block mb-1">Database Migrations & Maintenance</strong>
+                  <strong className="text-primary font-mono text-[9px] uppercase block mb-1">{t('caseStudy.labels.dbMigrations')}</strong>
                   <p>{t('caseStudy.tpsf.productionReality.maintenance')}</p>
                 </div>
                 <div>
-                  <strong className="text-primary font-mono text-[9px] uppercase block mb-1">Concurrency & Connection Safety</strong>
+                  <strong className="text-primary font-mono text-[9px] uppercase block mb-1">{t('caseStudy.labels.concurrencySafety')}</strong>
                   <p>{t('caseStudy.tpsf.productionReality.concurrency')}</p>
                 </div>
                 <div>
-                  <strong className="text-primary font-mono text-[9px] uppercase block mb-1">Data Quality & Normalization Realities</strong>
+                  <strong className="text-primary font-mono text-[9px] uppercase block mb-1">{t('caseStudy.labels.dataQuality')}</strong>
                   <p>{t('caseStudy.tpsf.productionReality.behavior')}</p>
                 </div>
               </div>
@@ -697,9 +698,9 @@ export function scanPdfBuffer(buffer) {
             <SectionLabel n="09" label={t('caseStudy.sections.scars')} />
             <div className="editorial-grid items-start">
               <div>
-                <h3 className="text-sm font-semibold text-primary mb-2">System Evolution in Production</h3>
+                <h3 className="text-sm font-semibold text-primary mb-2">{t('caseStudy.labels.systemEvolution')}</h3>
                 <p className="text-xs text-secondary leading-relaxed">
-                  Academic assessment cycles are subject to strict institutional policies. Evolving the system to match university structures required addressing real-world edge cases.
+                  {t('caseStudy.tpsf.scarsDesc')}
                 </p>
               </div>
               <div className="space-y-4">
@@ -764,7 +765,7 @@ export function scanPdfBuffer(buffer) {
                               rel="noopener noreferrer"
                               className="text-[10px] text-accent hover:underline font-mono inline-flex items-center gap-1"
                             >
-                              Inspect implementation in repository &rarr;
+                              {t('caseStudy.labels.inspectRepo')}
                             </a>
                           </div>
                         </>
