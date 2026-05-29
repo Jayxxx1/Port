@@ -30,6 +30,8 @@
     font-family: 'Sarabun', sans-serif;
     line-height: 1.85;
     letter-spacing: 0.01em;
+    word-break: keep-all;
+    overflow-wrap: break-word;
   }
 
   body.lang-th h1,
@@ -359,8 +361,9 @@
 
 /* Print CSS overrides for resume page PDF export */
 @media print {
-  body {
+  body, #root, .min-h-screen, main, .print-container, .bg-bg-surface, .bg-transparent {
     background: #ffffff !important;
+    background-color: #ffffff !important;
     color: #000000 !important;
   }
   
