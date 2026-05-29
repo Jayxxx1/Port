@@ -1,0 +1,358 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 16px;
+  }
+
+  body {
+    background-color: #0d0d0b;
+    color: #f0efe9;
+    font-family: 'Sarabun', 'Inter', system-ui, sans-serif;
+    font-weight: 400;
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+
+  /* Language-specific typography defaults */
+  body.lang-th {
+    font-family: 'Sarabun', sans-serif;
+    line-height: 1.85;
+    letter-spacing: 0.01em;
+  }
+
+  body.lang-th h1,
+  body.lang-th h2,
+  body.lang-th h3 {
+    font-family: 'Sarabun', sans-serif;
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: 0;
+  }
+
+  body.lang-th .display {
+    font-family: 'Sarabun', sans-serif;
+    font-size: clamp(1.75rem, 4.2vw, 2.75rem);
+    line-height: 1.35;
+    letter-spacing: 0;
+    font-weight: 700;
+  }
+
+  body.lang-th .display-sm {
+    font-family: 'Sarabun', sans-serif;
+    font-size: clamp(1.4rem, 3.2vw, 2.15rem);
+    line-height: 1.35;
+    letter-spacing: 0;
+    font-weight: 700;
+  }
+
+  body.lang-th .display-xs {
+    font-family: 'Sarabun', sans-serif;
+    font-size: clamp(1.15rem, 2.4vw, 1.65rem);
+    line-height: 1.4;
+    letter-spacing: 0;
+    font-weight: 600;
+  }
+
+  body.lang-th .eyebrow {
+    font-family: 'Sarabun', sans-serif;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+  }
+
+  body.lang-th .tag,
+  body.lang-th .mono-label,
+  body.lang-th .code-block {
+    /* Maintain readability */
+    line-height: 1.6;
+  }
+
+  /* Precise scrollbar */
+  ::-webkit-scrollbar { width: 1px; }
+  ::-webkit-scrollbar-track { background: #0d0d0b; }
+  ::-webkit-scrollbar-thumb { background: #2a2a27; }
+
+  ::selection {
+    background: rgba(196, 168, 130, 0.2);
+    color: #f0efe9;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Fraunces', 'Sarabun', Georgia, serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid #252522;
+  }
+}
+
+@layer components {
+  /* Layout */
+  .site-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  @media (min-width: 768px) {
+    .site-container {
+      padding: 0 4rem;
+    }
+  }
+
+  /* Typography */
+  .display {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: clamp(2.5rem, 5.5vw, 4.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    font-weight: 400;
+  }
+
+  .display-sm {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: clamp(1.85rem, 3.8vw, 3rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-weight: 400;
+  }
+
+  .display-xs {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: clamp(1.35rem, 2.5vw, 2rem);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    font-weight: 400;
+  }
+
+  .eyebrow {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #9a9991;
+  }
+
+  .section-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6875rem;
+    color: #52524e;
+    letter-spacing: 0.06em;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    padding: 0.625rem 1.25rem;
+    border: 1px solid #252522;
+    color: #9a9991;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    background: transparent;
+  }
+
+  .btn:hover {
+    border-color: #52524e;
+    color: #f0efe9;
+  }
+
+  .btn-text {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #9a9991;
+    transition: color 0.2s ease;
+    position: relative;
+  }
+
+  .btn-text::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: #c4a882;
+    transition: width 0.3s ease;
+  }
+
+  .btn-text:hover {
+    color: #f0efe9;
+  }
+
+  .btn-text:hover::after {
+    width: 100%;
+  }
+
+  /* Accent text */
+  .text-accent { color: #c4a882; }
+  .text-primary { color: #f0efe9; }
+  .text-secondary { color: #9a9991; }
+  .text-muted { color: #52524e; }
+
+  /* Mono label */
+  .mono-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6875rem;
+    letter-spacing: 0.04em;
+    color: #52524e;
+  }
+
+  /* Tag */
+  .tag {
+    display: inline-block;
+    font-size: 0.6875rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: #7a7971;
+    padding: 0.2rem 0.5rem;
+    border: 1px solid #252522;
+    letter-spacing: 0.02em;
+  }
+
+  /* Code block */
+  .code-block {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    line-height: 1.7;
+    color: #9a9991;
+    background: #141412;
+    border: 1px solid #252522;
+    padding: 1.25rem 1.5rem;
+    overflow-x: auto;
+  }
+
+  /* Horizontal rule with label */
+  .rule-with-label {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .rule-with-label::before,
+  .rule-with-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #252522;
+  }
+
+  .rule-with-label::before {
+    flex: 0 0 0;
+  }
+
+  /* Accent line — left border marker */
+  .accent-line {
+    border-left: 1px solid #c4a882;
+    padding-left: 1.25rem;
+  }
+
+  /* Grid */
+  .editorial-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 4rem;
+  }
+
+  @media (min-width: 768px) {
+    .editorial-grid {
+      grid-template-columns: 1fr 2fr;
+      gap: 6rem;
+    }
+  }
+
+  /* Section */
+  .section {
+    padding: 7rem 0;
+    border-top: 1px solid #252522;
+  }
+
+  @media (max-width: 768px) {
+    .section {
+      padding: 4rem 0;
+    }
+  }
+}
+
+/* Hover link underline animation */
+.link-underline {
+  position: relative;
+  display: inline-block;
+}
+
+.link-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: #f0efe9;
+  transition: width 0.3s ease;
+}
+
+.link-underline:hover::after {
+  width: 100%;
+}
+
+/* Fade in animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.7s ease forwards;
+}
+
+.animate-delay-1 { animation-delay: 0.1s; opacity: 0; }
+.animate-delay-2 { animation-delay: 0.25s; opacity: 0; }
+.animate-delay-3 { animation-delay: 0.4s; opacity: 0; }
+.animate-delay-4 { animation-delay: 0.55s; opacity: 0; }
+
+/* Project number large typography */
+.project-index {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: clamp(5rem, 12vw, 10rem);
+  line-height: 1;
+  color: #1f1f1c;
+  font-weight: 400;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Status indicator */
+.status-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4a7c59;
+  box-shadow: 0 0 0 2px rgba(74, 124, 89, 0.2);
+}

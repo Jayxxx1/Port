@@ -1,0 +1,373 @@
+{
+  "meta": {
+    "title": "Chinnakrit — Systems Developer",
+    "description": "Full-stack systems developer — building production-grade workflow systems from schema design to Docker deployment. Boonraksa-ERP System ERP, PSU TPSF EILA."
+  },
+  "nav": {
+    "brand": "Chinnakrit",
+    "role": "/ Systems Developer",
+    "links": {
+      "work": "Work",
+      "about": "About",
+      "contact": "Contact"
+    },
+    "menu": "Menu",
+    "close": "Close"
+  },
+  "hero": {
+    "eyebrow": "Full-Stack Systems Developer",
+    "line1": "Building systems",
+    "line2": "that handle",
+    "line3": "real complexity.",
+    "descriptor": "I independently architect, build, and deploy production-grade workflow systems — not demos or tutorials. From ERP platforms coordinating 17 roles across a manufacturing business, to university-scale academic assessment tools deployed at Prince of Songkla University.",
+    "ctaViewWork": "View Selected Work",
+    "ctaGithub": "github.com/Jayxxx1 ↗",
+    "stats": {
+      "production": "Production Systems",
+      "roles": "User Roles (Boonraksa-ERP System)",
+      "states": "Order States",
+      "schema": "Lines — Prisma Schema"
+    },
+    "scroll": "Scroll to explore"
+  },
+  "projects": {
+    "eyebrow": "Selected Work",
+    "cta": "Read Architecture Case Study →",
+    "ctaGithub": "GitHub ↗",
+    "boonraksa": {
+      "title": "Boonraksa-ERP System",
+      "subtitle": "ERP & Production Workflow System",
+      "viewSite": "Open Site ↗",
+      "role": "Sole Developer — Architecture to Deployment",
+      "period": "2024 – Present",
+      "description": "A full-stack operational ERP system built from scratch for a custom embroidery and apparel manufacturing business. Replaces scattered manual tools — chat, spreadsheets, human memory — with a single cross-department platform that coordinates sales, artwork, stock, production, sewing, QC, delivery, finance, and marketing.",
+      "metrics": {
+        "roles": "User Roles",
+        "states": "Order States",
+        "flows": "Flow Types",
+        "services": "Service Files",
+        "tests": "Test Suites",
+        "models": "DB Models"
+      },
+      "highlights": [
+        {
+          "title": "Pure-Function RBAC Permission Engine",
+          "description": "Every action on every order passes through canPerformAction(order, action, user) — returning structured { allowed, code } results, not exceptions. Shadow assignee detection allows admin override without explicit bypass code everywhere."
+        },
+        {
+          "title": "Atomic Linked Order Group Transactions",
+          "description": "When completing a linked order group, all sub-orders are atomically updated to COMPLETED with the same tracking number in a single database transaction — guaranteeing group consistency."
+        },
+        {
+          "title": "Downstream Rank Guard — Anti-Reversion Logic",
+          "description": "Order statuses are mapped to numeric ranks (1–16). If a requested transition would go to a lower rank without admin override, the system throws SUSPICIOUS_STATUS_REVERSION and logs the actor — preventing accidental backward transitions."
+        },
+        {
+          "title": "SLA Tracking with Stage-Aware Deadline Math",
+          "description": "Per-order SLA snapshots compute targetDeadline = dueDate − downstreamReserveDays + slaBufferLevel(0–3 days). Each stage gets a proportional share of the remaining time. Stale orders (idle >24h) are flagged regardless of deadline."
+        },
+        {
+          "title": "Finance Reconciliation with Group Payment Aggregation",
+          "description": "Finance overview aggregates realRevenue (sum of payment slips) vs virtualSales (sum of totalPrice), computing the outstanding gap across linked order groups. Payment slips are S3-signed with Promise.allSettled() so one failed signature never crashes the response."
+        },
+        {
+          "title": "17 Jest Test Suites",
+          "description": "Backend test coverage across: workflow, finance, linking, KPI, analytics, payments, embroidery, profile, documents, create, shared, reads, discovery, assets, system-config, and storage-url services."
+        }
+      ],
+      "architecture": [
+        {
+          "label": "React 19 + Vite",
+          "description": "Feature-folder frontend with role-specific dashboard views, Recharts analytics, realtime Socket.IO updates"
+        },
+        {
+          "label": "Express 4 (ESM)",
+          "description": "15 route modules, async error handler middleware, helmet security headers, role guard middleware chain"
+        },
+        {
+          "label": "Prisma ORM + PostgreSQL 16",
+          "description": "915-line schema, 30+ models, 8 composite indexes on Order model, transactional mutations throughout"
+        },
+        {
+          "label": "AWS S3 + Presigned URLs",
+          "description": "All order assets (artworks, embroidery files, mockups, payment slips) stored via S3 SDK v3 with time-limited access URLs"
+        },
+        {
+          "label": "Socket.IO + Web Push",
+          "description": "Realtime workflow notifications on desktop + mobile via push subscriptions; deferred from main mutation path"
+        },
+        {
+          "label": "Docker Compose + PM2",
+          "description": "PostgreSQL 16, nginx frontend container, backend with health checks; PM2 ecosystem config for VPS process management"
+        },
+        {
+          "label": "Sentry + SystemLog",
+          "description": "Error tracking via Sentry Node + internal SystemLog model for structured operational audit trail"
+        }
+      ]
+    },
+    "tpsf-eila": {
+      "title": "PSU TPSF EILA",
+      "subtitle": "University Academic Assessment Workflow Platform",
+      "role": "Sole Developer — Architecture to Deployment",
+      "period": "2025",
+      "description": "A multi-role academic performance assessment system deployed at Prince of Songkla University. Digitizes the faculty assessment workflow: from initial application through evaluation, committee review, document management, and certification — replacing a previously manual, paper-based process.",
+      "metrics": {
+        "roles": "User Roles",
+        "states": "Workflow States",
+        "modules": "API Modules",
+        "auth": "Auth Modes",
+        "pdf": "PDF Markers Scanned",
+        "deploy": "Deployment"
+      },
+      "highlights": [
+        {
+          "title": "Hybrid Dual-Transport JWT with Security Anomaly Logging",
+          "description": "HttpOnly cookie takes precedence over Authorization: Bearer. When both tokens are present with different values, an [auth anomaly] event is logged with IP + user agent — a real security monitoring pattern."
+        },
+        {
+          "title": "Data-Driven State Machine with Moredoc Routing",
+          "description": "Every transition runs inside a PostgreSQL client transaction with row-level state guard (WHERE status = 'DRAFT'). The moredoc return state is computed at runtime by querying the request_evaluators table — routing logic is data-driven, not hardcoded."
+        },
+        {
+          "title": "Three-Layer Policy Enforcement",
+          "description": "canView() checks: (1) role → (2) evaluator assignment via request_evaluators join → (3) faculty scope normalization. FAC_OFFICER reads are campus+faculty scoped at the policy layer, not just UI."
+        },
+        {
+          "title": "PDF Binary Content Scanner",
+          "description": "Uploaded PDFs are scanned for 9 dangerous binary markers (/JavaScript, /OpenAction, /Launch, /EmbeddedFile, /AcroForm, etc.) before storage — not a file extension check, actual binary content analysis."
+        },
+        {
+          "title": "5-Level Finance Policy Fallback Chain",
+          "description": "Determines which document form to show based on certification history. getDefaultNewForm() has 5 cascading fallbacks to ensure a form is always resolved, even for legacy or edge-case applicants."
+        }
+      ],
+      "architecture": [
+        {
+          "label": "React 18 + Vite (40+ routes)",
+          "description": "Full code-split SPA, two-layer auth guards (ProtectedRoute + RoleGuard), nested layouts per role group"
+        },
+        {
+          "label": "Express 5 + 13 Route Modules",
+          "description": "auth, requests, status, uploads, form, moredoc, experts, reports, evaluation, admin, notifications, users, central (PSU API proxy)"
+        },
+        {
+          "label": "PostgreSQL + pg client",
+          "description": "Direct pg client with explicit transaction management, row-level state guards, parameterized queries throughout"
+        },
+        {
+          "label": "Dual Auth: Local + PSU Passport",
+          "description": "Local JWT with HttpOnly cookies + Authentik OAuth2/OIDC integration for PSU SSO"
+        },
+        {
+          "label": "Dual Storage: S3 + Local",
+          "description": "Storage abstraction layer supporting both S3-compatible object storage and local filesystem — configurable per deployment"
+        },
+        {
+          "label": "Docker + PSU Private Registry + GitLab CI",
+          "description": "Multi-container deployment, CI/CD pipeline, institutional private container registry"
+        }
+      ]
+    }
+  },
+  "capabilities": {
+    "eyebrow": "Capabilities",
+    "headline": "The full stack,",
+    "headlineItalic": "applied.",
+    "descriptor": "Every capability listed here was used in a real, deployed production system — not sandboxes, not course projects, not contrived demos.",
+    "categories": {
+      "frontend": "Frontend Engineering",
+      "backend": "Backend Engineering",
+      "database": "Database & Persistence",
+      "security": "Security & Auth",
+      "systems": "Systems Architecture",
+      "devops": "Infrastructure & DevOps"
+    }
+  },
+  "about": {
+    "eyebrow": "About",
+    "headline": "Systems before",
+    "headlineItalic": "screens.",
+    "p1": "I'm a full-stack developer who independently designs, builds, and deploys production systems — not mockups, not demos, not tutorial projects. The systems I build handle real organizational workflows, real multi-role access control, and real business rules that must hold under operational pressure.",
+    "p2": "My approach starts with business logic — understanding state machines, permission models, and workflow constraints — before touching the UI. The complexity lives in the domain. Good software externalizes that complexity into clear, auditable structure.",
+    "pullquote": "What I value most isn't just the technologies I use, but understanding the workflow and system logic behind them in order to build software that is practical, scalable, and built for long-term growth.",
+    "p3": "Both systems I've built — Boonraksa-ERP System (a manufacturing ERP for a custom embroidery business) and PSU TPSF EILA (an academic assessment workflow at Prince of Songkla University) — are real production systems with real users, real operational stakes, and real architectural complexity.",
+    "keys": {
+      "currently": "Currently",
+      "based": "Based in",
+      "github": "GitHub",
+      "focus": "Focus"
+    },
+    "values": {
+      "currently": "Available for full-stack projects",
+      "based": "Thailand",
+      "github": "github.com/Jayxxx1",
+      "focus": "Systems architecture, workflow engineering, full-stack delivery , AI Agent , Vibe Coding"
+    }
+  },
+  "contact": {
+    "eyebrow": "Contact",
+    "headline": "Let's",
+    "headlineItalic": "work together.",
+    "p1": "Looking for a developer who can independently own complex systems — from database schema design to Docker deployment? I build production-grade software that handles real workflow complexity.",
+    "p2": "Both Boonraksa-ERP System and PSU TPSF EILA are real production systems. I'm happy to walk through the architecture, engineering decisions, and codebase in full detail during any technical review.",
+    "email": "Email",
+    "github": "GitHub"
+  },
+  "footer": {
+    "builtWith": "Built with React + Vite"
+  },
+  "caseStudy": {
+    "back": "← Back to Portfolio",
+    "typeErp": "Case Study · ERP System",
+    "typeUni": "Case Study · University Platform",
+    "largestSystem": "Largest System",
+    "deployedPsu": "Deployed at PSU",
+    "exploreCode": "Explore the codebase",
+    "codebaseNote": "Full system available on GitHub. Happy to discuss architecture in detail.",
+    "codebaseNoteTPSF": "Full system on GitHub. Happy to walk through architecture in detail.",
+    "viewGithub": "View on GitHub ↗",
+    "contactBtn": "Contact",
+    "viewBoonraksa": "View Boonraksa-ERP System →",
+    "sections": {
+      "problem": "Problem",
+      "workflow": "Order State Machine",
+      "rbac": "Permission Engine",
+      "highlights": "Engineering Highlights",
+      "architecture": "System Architecture",
+      "stack": "Full Stack",
+      "assessmentWorkflow": "Assessment Workflow",
+      "access": "Access Control",
+      "auth": "Authentication",
+      "securityArch": "Security Architecture"
+    },
+    "stackCategories": {
+      "Frontend": "Frontend",
+      "Backend": "Backend",
+      "Infrastructure": "Infrastructure",
+      "Realtime & Notifications": "Realtime & Push",
+      "Production Services": "Production Services",
+      "Testing": "Testing",
+      "Auth": "Authentication",
+      "Storage": "Storage"
+    },
+    "boonraksa": {
+      "problem": {
+        "title": "Replacing scattered",
+        "titleItalic": "manual tools.",
+        "p1": "Many small-to-medium production businesses run on scattered tools: chat apps, spreadsheets, manual stock notes, separate payment tracking, and human memory. Boonraksa-ERP System centralizes all of those flows into one operational system.",
+        "p2": "Each department sees the same order truth, but each role only acts on the part of the workflow they own. Sales can't touch production. Finance can't trigger shipment. QC can't skip the production gate.",
+        "p3": "The system coordinates the complete lifecycle: sales intake → artwork design → QA review → stock check → embroidery production → sewing → QC → delivery → finance reconciliation → marketing reporting."
+      },
+      "workflow": {
+        "title": "21+ states.",
+        "titleItalic": "1,627 lines.",
+        "p1": "The workflow service handles permission-gated transitions, downstream rank guards, atomic linked-order group updates, and deferred notification side effects.",
+        "labelGuard": "Anti-Reversion Guard",
+        "p2": "Order statuses are mapped to numeric ranks 1–16. Backward transitions without admin override are rejected and logged with actor identity.",
+        "labelFlow": "Complete State Flow"
+      },
+      "rbac": {
+        "title": "17 roles.",
+        "titleItalic": "736 lines.",
+        "p1": "Pure-function RBAC. Every action returns structured results — not exceptions.",
+        "shadowTitle": "Shadow Assignee",
+        "shadowDesc": "When an ADMIN occupies a role field, isShadowWorkflowAssignee() detects it — enabling transparent override without adding bypass checks everywhere.",
+        "linkedTitle": "Linked Sub-Order Guard",
+        "linkedDesc": "isLinkedSub detection prevents sub-orders from triggering shipment, payment, or billing. Only the main order owns those flows.",
+        "paymentTitle": "Group Payment Gate",
+        "paymentDesc": "COMPLETE_ORDER checks getGroupPaymentSummary() for the linked group — not just the individual order's balance."
+      },
+      "evidence": {
+        "dashboard": {
+          "caption": "Live Production Dashboard: Operational Overview Console",
+          "context": "A real-time administrative grid showcasing active order queues, department workload stats, and financial aggregates across sewing, embroidery, and graphic pipelines. Contains shift statistics and workflow triggers.",
+          "significance": "Demonstrates system activity aggregation via high-performance Prisma queries. The dashboard uses multi-table SQL aggregation on status groups to render queue status without high-CPU query overhead."
+        },
+        "workflow": {
+          "caption": "Operational Workflow: Order Detail Console & State Transitions",
+          "context": "Production view of a single custom garment order. Exhibits current status markers, specifications details (stitches, color runs, needles, size guides), and action toggles locked or unlocked based on current state and role.",
+          "significance": "Displays the interface reflection of the Express/Prisma state engine. Transitions are verified through database-level rank logic, preventing backward-reversions or state skips during active sewing."
+        },
+        "role": {
+          "caption": "Role-Based Console: Department-Specific Queues",
+          "context": "A grid view detailing role-specific interface layouts (e.g. Sales seeing pricing guides, Stock seeing thread allocation tables, Embroidery seeing needle guides, Delivery seeing address forms).",
+          "significance": "Visual proof of role-isolation rules. Every interface action is bound to permissions calculated by the backend RBAC mapping (`getOrderActionMap`), guaranteeing UI integrity matches backend validation."
+        },
+        "finance": {
+          "caption": "Financial Reconciliation Flow: Slip Verification Engine",
+          "context": "The billing audit queue displaying bank transfer slips, calculated revenue vs bank deposits, outstanding gaps across linked order groups, and single-click slip status verification buttons.",
+          "significance": "Corresponds to the pre-signed S3 URL aggregation service. Implements parallelized S3 key signing and transactional payment allocations to ensure slip validity and balance adjustments execute safely."
+        }
+      }
+    },
+    "tpsf": {
+      "problem": {
+        "title": "Digitizing a",
+        "titleItalic": "paper process.",
+        "p1": "PSU TPSF EILA digitizes the academic performance assessment workflow at Prince of Songkla University — replacing a previously paper-based process involving applicants, faculty officers, evaluators, committee members, and administrative staff.",
+        "p2": "The system handles the complete assessment lifecycle: applicant submission → faculty intake → EILA admin review → evaluator assignment → committee evaluation → additional document requests (moredoc) → certification.",
+        "p3": "Every state transition is transactional, role-gated, audited, and logged with actor identity. The moredoc return state is computed at runtime — not hardcoded."
+      },
+      "workflow": {
+        "title": "9 states.",
+        "titleItalic": "Transactional.",
+        "p1": "Every transition runs inside a PostgreSQL client transaction with a row-level state guard. If the row changed between read and write, the transition is rolled back.",
+        "p2": "The moredoc return state is computed by querying request_evaluators at runtime — routing is data-driven, not hardcoded.",
+        "labelFlow": "State Flow"
+      },
+      "access": {
+        "title": "Three-layer",
+        "titleItalic": "policy enforcement.",
+        "layer1Title": "Layer 1 — Role",
+        "layer1Desc": "Is the user's role allowed to perform this action at all?",
+        "layer2Title": "Layer 2 — Assignment",
+        "layer2Desc": "For EXPERT/COMMITTEE/COMMITTEE_HEAD: are they listed in request_evaluators for this specific request?",
+        "layer3Title": "Layer 3 — Scope",
+        "layer3Desc": "For FAC_OFFICER: does the request belong to their campus+faculty scope? Strings are normalized before comparison — whitespace and case variations cannot bypass this check."
+      },
+      "auth": {
+        "title": "Hybrid dual-",
+        "titleItalic": "transport JWT.",
+        "desc1": "HttpOnly cookie takes precedence over Authorization: Bearer header",
+        "desc2": "Dual-token mismatch logged as auth anomaly with IP + user agent",
+        "desc3": "Timing-safe CSRF comparison on all state-mutating requests",
+        "desc4": "PSU Passport (Authentik OAuth2/OIDC) for university SSO"
+      },
+      "security": [
+        {
+          "title": "PDF Binary Scanning",
+          "desc": "9 dangerous PDF markers (/JavaScript, /OpenAction, /Launch, /EmbeddedFile, /AcroForm, etc.) scanned in binary buffer — not a file extension check."
+        },
+        {
+          "title": "HttpOnly Cookies",
+          "desc": "JWT stored in HttpOnly cookies, not localStorage — inaccessible to JavaScript."
+        },
+        {
+          "title": "Scope Enforcement",
+          "desc": "Faculty scope check enforced at the policy layer, not just UI filtering."
+        },
+        {
+          "title": "File Cleanup on Failure",
+          "desc": "Validation failures trigger automatic deletion of uploaded S3 keys and local temp paths — no orphaned storage."
+        },
+        {
+          "title": "Dynamic CORS",
+          "desc": "Set-based origin resolution from env — no wildcard CORS."
+        },
+        {
+          "title": "Server Model Header Disabled",
+          "desc": "Express fingerprint (x-powered-by) hidden from all responses."
+        },
+        {
+          "title": "Moredoc Quota",
+          "desc": "MOREDOC_APPLICANT_MAX_FILES = 5 enforced by COUNT query inside transaction before insert."
+        },
+        {
+          "title": "Thai Filename Mojibake",
+          "desc": "normalizeOriginalFileName() detects and corrects latin1→UTF-8 corruption by measuring Thai character density."
+        }
+      ]
+    }
+  }
+}
